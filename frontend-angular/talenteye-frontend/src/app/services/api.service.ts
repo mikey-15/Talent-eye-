@@ -78,6 +78,16 @@ export interface DrillVideoResultPayload {
   total_frames_processed?: number;
   metrics?: DrillVideoResultMetrics;
   total_scans_detected?: number;
+  analysis_quality?: {
+    multi_player_detected?: boolean;
+    frames_with_person?: number;
+    frames_with_multiple_people?: number;
+    primary_presence_ratio?: number;
+    primary_dominance_ratio?: number;
+    primary_player_lock_passed?: boolean;
+    label?: string;
+    message?: string;
+  };
   [key: string]: any;
 }
 

@@ -6,6 +6,7 @@ import { ApiService, DrillVideoResultMetrics, Video } from '../../../services/ap
 import { ToastrService } from 'ngx-toastr';
 import { Subject, of, interval, Subscription } from 'rxjs';
 import { catchError, finalize, takeUntil } from 'rxjs/operators';
+import { normalizeMetricByKind } from '../../../utils/metric-labels';
 
 @Component({
   selector: 'app-video-list',
@@ -351,6 +352,20 @@ export class VideoList implements OnInit, OnDestroy {
       scansDetected: metrics.total_scans_detected ?? payload.total_scans_detected ?? (payload as any)?.total_scans_detected ?? null,
       movementSpeedPxS: metrics.movement_speed_px_s ?? (payload as any)?.movement_speed_px_s ?? null,
       avgTouchTightness: avgTouch,
+      quickFeetScore: metrics.cadence_spm != null ? normalizeMetricByKind('cadence_spm', Number(metrics.cadence_spm)) : null,
+      scanningScore:
+        (metrics.total_scans_detected ?? payload.total_scans_detected ?? (payload as any)?.total_scans_detected) != null
+          ? normalizeMetricByKind(
+              'total_scans_detected',
+              Number(metrics.total_scans_detected ?? payload.total_scans_detected ?? (payload as any)?.total_scans_detected)
+            )
+          : null,
+      mobilityScore:
+        metrics.movement_speed_px_s != null
+          ? normalizeMetricByKind('movement_speed_px_s', Number(metrics.movement_speed_px_s))
+          : null,
+      closeControlScore:
+        avgTouch != null ? normalizeMetricByKind('avg_touch_tightness', Number(avgTouch)) : null,
       history
     };
   }

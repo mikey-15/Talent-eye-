@@ -74,6 +74,20 @@
           </a>
         </div>
 
+        <div
+          *ngIf="analysisQuality.hasQualityData"
+          class="alert mb-3"
+          [ngClass]="analysisQuality.primaryPlayerLockPassed ? 'alert-success' : 'alert-warning'"
+        >
+          <div class="fw-semibold">
+            {{ analysisQuality.label || (analysisQuality.primaryPlayerLockPassed ? 'Clip quality: pass' : 'Clip quality: caution') }}
+          </div>
+          <div class="small mb-1">{{ analysisQuality.message }}</div>
+          <div class="small text-muted" *ngIf="analysisQuality.multiPlayerDetected">
+            Primary presence {{ primaryPresencePercent() }}% · Dominance {{ primaryDominancePercent() }}%
+          </div>
+        </div>
+
         <div class="kpi-row">
           <span class="kpi-chip" *ngIf="closeControlScorePercent() !== null">Close control <b>{{ closeControlScorePercent() | number:'1.0-0' }}%</b></span>
           <span class="kpi-chip" *ngIf="kpi.totalSteps !== null">Steps <b>{{ kpi.totalSteps }}</b></span>

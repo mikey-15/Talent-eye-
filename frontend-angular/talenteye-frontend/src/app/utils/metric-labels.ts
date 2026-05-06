@@ -7,10 +7,10 @@ import { Metric } from '../services/api.service';
  * Keep in sync with `players/performance_rating.py`.
  */
 export const METRIC_NORMALIZATION = {
-  CADENCE_SPM_AT_100: 92,
-  MOVEMENT_PX_S_AT_100: 200,
-  SCANS_COUNT_AT_100: 5,
-  STEPS_COUNT_AT_100: 38,
+  CADENCE_SPM_AT_100: 120,
+  MOVEMENT_PX_S_AT_100: 380,
+  SCANS_COUNT_AT_100: 7,
+  STEPS_COUNT_AT_100: 55,
   TOUCH_AVG_PX_CAP: 170,
   TOUCH_AVG_PX_DIVISOR: 2.45
 } as const;

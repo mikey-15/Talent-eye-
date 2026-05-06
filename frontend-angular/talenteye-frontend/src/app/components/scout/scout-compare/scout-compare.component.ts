@@ -114,9 +114,15 @@ export class ScoutCompareComponent implements OnInit, OnDestroy {
       )
       .subscribe({
         next: ({ directory, performances }) => {
-          this.players = ids.map((id, i) => {
+          const perfById = new Map<number, PlayerPerformance | null>();
+          ids.forEach((id, i) => perfById.set(id, performances[i] ?? null));
+          const sortedIds = [...ids].sort((a, b) =>
+            this.compareForRanking(perfById.get(a) ?? null, perfById.get(b) ?? null)
+          );
+
+          this.players = sortedIds.map((id) => {
             const p = directory.find((x) => x.id === id);
-            const perf = performances[i] ?? null;
+            const perf = perfById.get(id) ?? null;
             return {
               id,
               username: p?.username ?? `Player #${id}`,
@@ -126,7 +132,10 @@ export class ScoutCompareComponent implements OnInit, OnDestroy {
             };
           });
 
-          this.rows = this.buildRowsFromPerformances(ids, performances);
+          this.rows = this.buildRowsFromPerformances(
+            sortedIds,
+            sortedIds.map((id) => perfById.get(id) ?? null)
+          );
           this.cdr.detectChanges();
         },
         error: () => {
@@ -172,7 +181,11 @@ export class ScoutCompareComponent implements OnInit, OnDestroy {
       ids.forEach((pid, i) => {
         values[pid] = this.cellForKind(perfs[i], k);
       });
-      rows.push({ name: COACH_FACING_TITLE[k], unit: '%', values });
+      rows.push({
+        name: k === 'total_steps' ? `${COACH_FACING_TITLE[k]} (context)` : COACH_FACING_TITLE[k],
+        unit: k === 'total_steps' ? 'avg count' : '%',
+        values
+      });
     }
 
     return rows;
@@ -181,7 +194,47 @@ export class ScoutCompareComponent implements OnInit, OnDestroy {
   private cellForKind(p: PlayerPerformance | null, k: MetricKind): string {
     const d = p?.performance_summary?.metrics_summary?.[k];
     if (!d || d.average == null || (d.count ?? 0) <= 0) return '—';
+    if (k === 'total_steps') {
+      const n = Number(d.average);
+      if (Number.isNaN(n)) return '—';
+      return Number.isInteger(n) ? String(n) : n.toFixed(1);
+    }
     return `${normalizeMetricByKind(k, d.average).toFixed(0)}%`;
+  }
+
+  private averageForKind(p: PlayerPerformance | null, k: MetricKind): number | null {
+    const d = p?.performance_summary?.metrics_summary?.[k];
+    if (!d || d.average == null || (d.count ?? 0) <= 0) return null;
+    const n = Number(d.average);
+    return Number.isNaN(n) ? null : n;
+  }
+
+  /** Drive first (mobility), then tempo for tie-breaks. */
+  private compareForRanking(a: PlayerPerformance | null, b: PlayerPerformance | null): number {
+    const driveA = this.averageForKind(a, 'movement_speed_px_s');
+    const driveB = this.averageForKind(b, 'movement_speed_px_s');
+    if (driveA != null || driveB != null) {
+      if (driveA == null) return 1;
+      if (driveB == null) return -1;
+      if (driveA !== driveB) return driveB - driveA;
+    }
+
+    const tempoA = this.averageForKind(a, 'cadence_spm');
+    const tempoB = this.averageForKind(b, 'cadence_spm');
+    if (tempoA != null || tempoB != null) {
+      if (tempoA == null) return 1;
+      if (tempoB == null) return -1;
+      if (tempoA !== tempoB) return tempoB - tempoA;
+    }
+
+    const ratingA = a?.performance_summary?.overall_rating ?? null;
+    const ratingB = b?.performance_summary?.overall_rating ?? null;
+    if (ratingA != null || ratingB != null) {
+      if (ratingA == null) return 1;
+      if (ratingB == null) return -1;
+      if (ratingA !== ratingB) return ratingB - ratingA;
+    }
+    return 0;
   }
 
   clearCompare(): void {

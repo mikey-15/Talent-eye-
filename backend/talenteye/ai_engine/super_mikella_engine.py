@@ -105,7 +105,17 @@ def run_engine_on_video(
         "metrics": {
             "touch_tightness_history": [],
             "heavy_touches_counted": 0,
-        }
+        },
+        "analysis_quality": {
+            "multi_player_detected": False,
+            "frames_with_person": 0,
+            "frames_with_multiple_people": 0,
+            "primary_presence_ratio": 0.0,
+            "primary_dominance_ratio": 0.0,
+            "primary_player_lock_passed": True,
+            "label": "Single-player clip",
+            "message": "One clear player in frame. Metrics are suitable for comparison."
+        },
     }
 
     DISPLAY_SCALE = display_scale
@@ -122,6 +132,9 @@ def run_engine_on_video(
     # Avoid counting "heavy touches" when the ball is far away (scanning / no real control context)
     # or spamming one increment per video frame during sustained loose distance.
     heavy_touch_cooldown_frames = 0
+    frames_with_person = 0
+    frames_with_multiple_people = 0
+    frames_primary_dominant = 0
 
     while cap.isOpened():
         ret, frame = cap.read()
@@ -155,6 +168,37 @@ def run_engine_on_video(
                 ball_cy = int((y1 + y2) / 2)
                 ball_center = (ball_cx, ball_cy)
                 cv2.circle(frame, ball_center, 8, (255, 255, 0), -1)
+
+        # Minimal multi-player reliability gate using YOLO "person" detections.
+        # We allow multiple players in frame only when one player is clearly dominant.
+        try:
+            person_results = yolo_model.predict(frame, classes=[0], conf=0.2, verbose=False)
+        except Exception:
+            person_results = []
+        person_boxes = []
+        if (
+            len(person_results) > 0
+            and hasattr(person_results[0], 'boxes')
+            and getattr(person_results[0].boxes, 'xyxy', None) is not None
+        ):
+            person_boxes = person_results[0].boxes.xyxy.cpu().numpy().tolist()
+
+        person_areas = []
+        for p in person_boxes:
+            px1, py1, px2, py2 = p
+            area = max(0.0, float(px2 - px1)) * max(0.0, float(py2 - py1))
+            if area > 0:
+                person_areas.append(area)
+
+        if person_areas:
+            frames_with_person += 1
+            person_areas.sort(reverse=True)
+            primary = person_areas[0]
+            secondary = person_areas[1] if len(person_areas) > 1 else 0.0
+            if secondary <= 0 or primary >= (1.3 * secondary):
+                frames_primary_dominant += 1
+            if len(person_areas) > 1:
+                frames_with_multiple_people += 1
 
         # MediaPipe pose
         if not USE_TASKS_API:
@@ -312,6 +356,43 @@ def run_engine_on_video(
     scouting_report["metrics"]["cadence_spm"] = round(cadence_spm, 1)
     scouting_report["metrics"]["total_scans_detected"] = total_scans
     scouting_report["total_scans_detected"] = total_scans
+
+    total_frames = scouting_report["total_frames_processed"] or 0
+    primary_presence_ratio = (frames_with_person / total_frames) if total_frames > 0 else 0.0
+    primary_dominance_ratio = (
+        (frames_primary_dominant / frames_with_person) if frames_with_person > 0 else 0.0
+    )
+    multi_player_detected = frames_with_multiple_people > 0
+    lock_passed = True
+    label = "Single-player clip"
+    message = "One clear player in frame. Metrics are suitable for comparison."
+
+    if multi_player_detected:
+        # Minimal gate for 2+ player scenarios.
+        lock_passed = primary_presence_ratio >= 0.75 and primary_dominance_ratio >= 0.65
+        if lock_passed:
+            label = "Multi-player clip (lock passed)"
+            message = (
+                "Multiple players were visible, but one player stayed dominant in frame. "
+                "Metrics are usable for comparison."
+            )
+        else:
+            label = "Low-confidence multi-player clip"
+            message = (
+                "Multiple players were visible without a stable dominant player. "
+                "Use this clip for coaching context only; avoid cross-player ranking."
+            )
+
+    scouting_report["analysis_quality"] = {
+        "multi_player_detected": multi_player_detected,
+        "frames_with_person": int(frames_with_person),
+        "frames_with_multiple_people": int(frames_with_multiple_people),
+        "primary_presence_ratio": round(primary_presence_ratio, 3),
+        "primary_dominance_ratio": round(primary_dominance_ratio, 3),
+        "primary_player_lock_passed": bool(lock_passed),
+        "label": label,
+        "message": message,
+    }
 
     if output_json_path is None:
         output_json_path = os.path.join(os.getcwd(), "mikella_scouting_report.json")

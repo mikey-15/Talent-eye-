@@ -31,6 +31,15 @@ export class MetricsDashboard implements OnInit, OnDestroy {
   hasTouchHistory = false;
   /** True when the engine returned no per-touch samples; chart is a flat series from average tightness. */
   touchHistoryIsSynthetic = false;
+  analysisQuality = {
+    hasQualityData: false,
+    multiPlayerDetected: false,
+    primaryPlayerLockPassed: true,
+    label: '',
+    message: '',
+    primaryPresenceRatio: null as number | null,
+    primaryDominanceRatio: null as number | null,
+  };
   kpi = {
     totalSteps: null as number | null,
     cadenceSpm: null as number | null,
@@ -178,6 +187,15 @@ export class MetricsDashboard implements OnInit, OnDestroy {
   loadMetricsAndHistory(videoId: number): void {
     this.isLoading = true;
     this.touchHistoryIsSynthetic = false;
+    this.analysisQuality = {
+      hasQualityData: false,
+      multiPlayerDetected: false,
+      primaryPlayerLockPassed: true,
+      label: '',
+      message: '',
+      primaryPresenceRatio: null,
+      primaryDominanceRatio: null,
+    };
     const video = this.videos.find((v) => v.id === videoId);
 
     forkJoin({
@@ -215,6 +233,24 @@ export class MetricsDashboard implements OnInit, OnDestroy {
         const lookup = new Map<string, number>();
         this.metrics.forEach((m) => lookup.set(m.metric_name, m.value));
         const metricByName = (name: string) => lookup.get(name) ?? null;
+
+        const quality =
+          payloadSource?.analysis_quality && typeof payloadSource.analysis_quality === 'object'
+            ? payloadSource.analysis_quality
+            : null;
+        const presence = quality?.primary_presence_ratio;
+        const dominance = quality?.primary_dominance_ratio;
+        this.analysisQuality = {
+          hasQualityData: !!quality,
+          multiPlayerDetected: !!quality?.multi_player_detected,
+          primaryPlayerLockPassed: quality?.primary_player_lock_passed !== false,
+          label: quality?.label || '',
+          message: quality?.message || '',
+          primaryPresenceRatio:
+            typeof presence === 'number' && Number.isFinite(presence) ? presence : null,
+          primaryDominanceRatio:
+            typeof dominance === 'number' && Number.isFinite(dominance) ? dominance : null,
+        };
 
         const totalFrames =
           payloadSource?.total_frames_processed ??
@@ -414,6 +450,16 @@ export class MetricsDashboard implements OnInit, OnDestroy {
       );
     }
 
+    if (
+      this.analysisQuality.hasQualityData &&
+      this.analysisQuality.multiPlayerDetected &&
+      !this.analysisQuality.primaryPlayerLockPassed
+    ) {
+      tips.unshift(
+        `${label}: multi-player detection was unstable, so treat this clip as context only instead of ranking material.`
+      );
+    }
+
     if (tips.length === 0) {
       tips.push(
         `${label}: numbers look balanced—use the overlay clip to spot one habit to repeat and one to sharpen next time.`
@@ -610,6 +656,16 @@ th{background:#f1f5f9;font-weight:600} .hint{margin-top:28px;padding:12px;backgr
     const v = this.overall.avgTouchTightnessAvg;
     if (v == null) return null;
     return normalizeMetricByKind('avg_touch_tightness', v);
+  }
+
+  primaryPresencePercent(): number | null {
+    const v = this.analysisQuality.primaryPresenceRatio;
+    return v == null ? null : Math.round(v * 100);
+  }
+
+  primaryDominancePercent(): number | null {
+    const v = this.analysisQuality.primaryDominanceRatio;
+    return v == null ? null : Math.round(v * 100);
   }
 
   private computeOverallAverages(): void {

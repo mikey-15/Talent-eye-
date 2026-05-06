@@ -126,24 +126,24 @@
           <ng-container *ngIf="getMetricSnapshot(video) as metrics">
             <div class="metric-chips">
               <div class="metric-chip" *ngIf="metrics.totalSteps !== null">
-                <span class="metric-label">Steps</span>
+                <span class="metric-label">Steps (context)</span>
                 <span class="metric-value">{{ metrics.totalSteps }}</span>
               </div>
-              <div class="metric-chip" *ngIf="metrics.cadenceSpm !== null">
-                <span class="metric-label">Tempo</span>
-                <span class="metric-value">{{ metrics.cadenceSpm | number:'1.0-1' }} steps/min</span>
+              <div class="metric-chip" *ngIf="metrics.quickFeetScore !== null">
+                <span class="metric-label">Quick feet</span>
+                <span class="metric-value">{{ metrics.quickFeetScore | number:'1.0-0' }}%</span>
               </div>
-              <div class="metric-chip" *ngIf="metrics.movementSpeedPxS !== null">
-                <span class="metric-label">Movement speed</span>
-                <span class="metric-value">{{ metrics.movementSpeedPxS | number:'1.0-1' }} px/s</span>
-              </div>
-              <div class="metric-chip" *ngIf="metrics.scansDetected !== null">
+              <div class="metric-chip" *ngIf="metrics.scanningScore !== null">
                 <span class="metric-label">Scanning</span>
-                <span class="metric-value">{{ metrics.scansDetected }}</span>
+                <span class="metric-value">{{ metrics.scanningScore | number:'1.0-0' }}%</span>
               </div>
-              <div class="metric-chip" *ngIf="metrics.avgTouchTightness !== null">
-                <span class="metric-label">Ball-to-foot spacing</span>
-                <span class="metric-value">{{ metrics.avgTouchTightness | number:'1.0-1' }} px</span>
+              <div class="metric-chip" *ngIf="metrics.mobilityScore !== null">
+                <span class="metric-label">Mobility</span>
+                <span class="metric-value">{{ metrics.mobilityScore | number:'1.0-0' }}%</span>
+              </div>
+              <div class="metric-chip" *ngIf="metrics.closeControlScore !== null">
+                <span class="metric-label">Close control</span>
+                <span class="metric-value">{{ metrics.closeControlScore | number:'1.0-0' }}%</span>
               </div>
             </div>
           </ng-container>
