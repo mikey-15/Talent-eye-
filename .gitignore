@@ -1,0 +1,38 @@
+# Python/Django
+__pycache__/
+*.py[cod]
+*$py.class
+db.sqlite3
+.env
+venv/
+env/
+.idea/
+.vscode/
+*.log
+
+# Media / Storage
+backend/talenteye/media/
+
+# Frontend (Angular/Node)
+node_modules/
+dist/
+out-tsc/
+.angular/
+.cache/
+
+# Explicitly requested ignores
+*.docx
+
+# Ignore all markdown files except README
+*.md
+!README.md
+!readme.md
+!Readme.md
+
+# Unrelated python files
+backend/talenteye/set_superuser_password.py
+backend/talenteye/upload_kativu_image.py
+
+# Ignore other folders not requested
+frontend-ionic/
+talenteye.code-workspace

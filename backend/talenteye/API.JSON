@@ -1,0 +1,185 @@
+{
+  "authentication": {
+    "register": {
+      "method": "POST",
+      "url": "/api/auth/register/",
+      "description": "Register a new user (Player or Scout)",
+      "request": {
+        "username": "string",
+        "email": "string",
+        "password": "string",
+        "role": "PLAYER | SCOUT"
+      },
+      "response": {
+        "message": "User registered"
+      }
+    },
+    "login": {
+      "method": "POST",
+      "url": "/api/auth/login/",
+      "description": "Authenticate user and return JWT tokens",
+      "request": {
+        "username": "string",
+        "password": "string"
+      },
+      "response": {
+        "access": "jwt_access_token",
+        "refresh": "jwt_refresh_token"
+      }
+    },
+    "refresh": {
+      "method": "POST",
+      "url": "/api/auth/refresh/",
+      "description": "Refresh JWT access token",
+      "request": {
+        "refresh": "jwt_refresh_token"
+      },
+      "response": {
+        "access": "new_jwt_access_token"
+      }
+    }
+  },
+
+  "player": {
+    "get_profile": {
+      "method": "GET",
+      "url": "/api/player/profile/",
+      "permission": "PLAYER",
+      "description": "Retrieve logged-in player's profile",
+      "request": {},
+      "response": {
+        "id": "number",
+        "username": "string",
+        "date_of_birth": "YYYY-MM-DD",
+        "height_cm": "number | null",
+        "preferred_position": "string",
+        "dominant_foot": "string",
+        "location": "string"
+      }
+    },
+    "update_profile": {
+      "method": "PUT",
+      "url": "/api/player/profile/",
+      "permission": "PLAYER",
+      "description": "Update logged-in player's profile",
+      "request": {
+        "date_of_birth": "YYYY-MM-DD",
+        "height_cm": "number",
+        "preferred_position": "string",
+        "dominant_foot": "string",
+        "location": "string"
+      },
+      "response": {
+        "id": "number",
+        "preferred_position": "string",
+        "dominant_foot": "string",
+        "location": "string"
+      }
+    }
+  },
+
+  "drills": {
+    "list_drills": {
+      "method": "GET",
+      "url": "/api/drills/",
+      "permission": "AUTHENTICATED",
+      "description": "Fetch all available football drills",
+      "request": {},
+      "response": [
+        {
+          "id": "number",
+          "name": "string",
+          "description": "string",
+          "duration_seconds": "number",
+          "required_view": "string"
+        }
+      ]
+    }
+  },
+
+  "videos": {
+    "upload_video": {
+      "method": "POST",
+      "url": "/api/videos/upload/",
+      "permission": "PLAYER",
+      "description": "Upload a drill video for analysis",
+      "request": {
+        "drill": "drill_id",
+        "video": "video_file (multipart/form-data)"
+      },
+      "response": {
+        "id": "number",
+        "drill": "number",
+        "status": "PENDING | PROCESSING | COMPLETED",
+        "uploaded_at": "timestamp"
+      }
+    },
+    "my_videos": {
+      "method": "GET",
+      "url": "/api/videos/my/",
+      "permission": "PLAYER",
+      "description": "Fetch videos uploaded by logged-in player",
+      "request": {},
+      "response": [
+        {
+          "id": "number",
+          "drill": "number",
+          "status": "string",
+          "uploaded_at": "timestamp"
+        }
+      ]
+    }
+  },
+
+  "metrics": {
+    "video_metrics": {
+      "method": "GET",
+      "url": "/api/metrics/video/{video_id}/",
+      "permission": "PLAYER (own video) | SCOUT",
+      "description": "Retrieve AI-generated metrics for a video",
+      "request": {},
+      "response": [
+        {
+          "metric_name": "string",
+          "value": "number",
+          "unit": "string",
+          "confidence": "number (0-1)"
+        }
+      ]
+    }
+  },
+
+  "scout": {
+    "list_players": {
+      "method": "GET",
+      "url": "/api/scouts/players/",
+      "permission": "SCOUT",
+      "description": "List all registered player profiles",
+      "request": {},
+      "response": [
+        {
+          "id": "number",
+          "username": "string",
+          "preferred_position": "string",
+          "dominant_foot": "string",
+          "location": "string"
+        }
+      ]
+    },
+    "player_metrics": {
+      "method": "GET",
+      "url": "/api/scouts/players/{player_id}/metrics/",
+      "permission": "SCOUT",
+      "description": "Retrieve all metrics for a specific player",
+      "request": {},
+      "response": [
+        {
+          "metric_name": "string",
+          "value": "number",
+          "unit": "string",
+          "confidence": "number"
+        }
+      ]
+    }
+  }
+}
