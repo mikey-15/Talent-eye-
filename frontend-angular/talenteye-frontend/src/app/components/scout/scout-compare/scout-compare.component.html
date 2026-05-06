@@ -1,0 +1,70 @@
+<div class="compare-root">
+  <div class="container">
+    <div class="video-list-header compare-toolbar">
+      <div>
+        <h1 class="video-list-title">
+          <i class="bi bi-grid-1x2"></i>
+          Compare players
+        </h1>
+        <p class="text-muted mb-0 small">
+          Card-style view inspired by player items—core metrics are shown as 0–100% scores (same engine as profiles).
+        </p>
+      </div>
+      <div class="video-list-actions">
+        <button type="button" class="btn btn-outline-secondary" (click)="clearCompare()">
+          Clear &amp; exit
+        </button>
+        <a routerLink="/scout/players" class="btn btn-outline-primary">Directory</a>
+      </div>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center py-5">
+      <app-loading-spinner [fullScreen]="false" message="Loading metrics…"></app-loading-spinner>
+    </div>
+
+    <div *ngIf="!isLoading && players.length" class="compare-body">
+      <div class="fifa-card-row">
+        <article class="fifa-card" *ngFor="let p of players">
+          <div class="fifa-card-inner">
+            <div class="fifa-ovr">
+              <span class="fifa-ovr-label">OVR</span>
+              <span class="fifa-ovr-num">{{ p.overall_rating != null && p.overall_rating > 0 ? p.overall_rating : '—' }}</span>
+            </div>
+            <div class="fifa-card-main">
+              <h2 class="fifa-name">{{ p.username }}</h2>
+              <p class="fifa-pos">{{ p.preferred_position || 'Position n/a' }}</p>
+              <p class="fifa-meta text-muted small mb-0">
+                <span *ngIf="p.total_videos != null">{{ p.total_videos }} analyzed clip{{ p.total_videos === 1 ? '' : 's' }}</span>
+              </p>
+            </div>
+          </div>
+        </article>
+      </div>
+
+      <div class="filters-section p-0 overflow-hidden compare-table-wrap">
+        <div class="table-responsive">
+          <table class="table compare-table mb-0">
+            <thead>
+              <tr>
+                <th class="metric-col">Metric</th>
+                <th *ngFor="let p of players" class="player-col text-center">
+                  <span class="compare-player-head">{{ p.username }}</span>
+                </th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let row of rows">
+                <td>
+                  <strong>{{ row.name }}</strong>
+                  <span class="text-muted small ms-1" *ngIf="row.unit">({{ row.unit }})</span>
+                </td>
+                <td *ngFor="let p of players" class="text-center fw-semibold">{{ row.values[p.id] }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p *ngIf="!rows.length" class="p-3 text-muted mb-0">No overlapping metrics found for these players.</p>
+      </div>
+    </div>
+  </div>
+</div>

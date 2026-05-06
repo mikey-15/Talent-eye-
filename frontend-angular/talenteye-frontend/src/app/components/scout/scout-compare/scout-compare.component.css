@@ -1,0 +1,133 @@
+.compare-root {
+  padding-bottom: 2rem;
+}
+
+.compare-toolbar {
+  align-items: flex-start;
+}
+
+.compare-body {
+  margin-top: 0.5rem;
+}
+
+/* FIFA-inspired prospect cards */
+.fifa-card-row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.fifa-card {
+  border-radius: 10px;
+  padding: 2px;
+  background: linear-gradient(145deg, #10b981 0%, #006400 35%, #0a2342 100%);
+  box-shadow: 0 8px 20px rgba(10, 35, 66, 0.25);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s ease;
+  max-width: 200px;
+  margin: 0 auto;
+}
+
+.fifa-card:hover {
+    transform: translateY(-3px);
+}
+
+.fifa-card-inner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  align-items: center;
+  border-radius: 8px;
+  background: linear-gradient(165deg, #0a2342 0%, #071428 100%);
+  color: #fff;
+  padding: 1rem 0.75rem;
+  min-height: 180px;
+  text-align: center;
+}
+
+.fifa-ovr {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.25rem;
+  color: #10b981;
+  background: transparent;
+  box-shadow: none;
+}
+
+.fifa-ovr-label {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  color: #e2e8f0;
+  text-transform: uppercase;
+}
+
+.fifa-ovr-num {
+  font-size: 2.25rem;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.fifa-card-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  border-top: 1px solid rgba(16, 185, 129, 0.2);
+  padding-top: 0.75rem;
+}
+
+.fifa-name {
+  font-size: 1rem;
+  font-weight: 700;
+  margin: 0 0 0.25rem;
+  line-height: 1.2;
+  text-transform: uppercase;
+  color: #fff;
+}
+
+.fifa-pos {
+  font-size: 0.8rem;
+  color: #10b981;
+  margin: 0 0 0.25rem;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.fifa-card .fifa-meta.text-muted {
+    color: #94a3b8 !important;
+    font-size: 0.75rem;
+}
+
+.compare-table-wrap {
+  border-radius: 12px;
+  border: 1px solid rgba(10, 35, 66, 0.12);
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.compare-table th,
+.compare-table td {
+  vertical-align: middle;
+}
+
+.compare-table .metric-col {
+  min-width: 150px;
+}
+
+.compare-table thead th {
+  background: rgba(10, 35, 66, 0.06);
+  border-bottom-width: 1px;
+}
+
+.compare-player-head {
+  font-weight: 600;
+  color: var(--navy-blue, #0a2342);
+}

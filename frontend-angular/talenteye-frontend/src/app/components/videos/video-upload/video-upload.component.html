@@ -1,0 +1,150 @@
+
+<div class="upload-container">
+  <div class="container">
+    <div class="upload-card" [class.upload-card-busy]="formLocked">
+      <!-- Header -->
+      <div class="upload-header">
+        <h1 class="upload-title">Upload Video</h1>
+        <p class="upload-subtitle">Upload a clip and get AI-powered breakdowns</p>
+      </div>
+
+      <!-- Body -->
+      <div class="upload-body">
+        <!-- Upload Form -->
+        <form [formGroup]="uploadForm" (ngSubmit)="onSubmit()" class="upload-form">
+          <!-- Video Upload -->
+          <div class="form-section"
+               [class.form-section-locked]="formLocked"
+               [class.drag-over]="false"
+               (dragover)="onDragOver($event)"
+               (drop)="onDrop($event)">
+            <label class="form-label">
+              Upload Video <span class="required">*</span>
+            </label>
+            
+            <!-- File Upload Area -->
+            <div class="file-upload-area" *ngIf="!selectedFile">
+              <div class="upload-icon">
+                <i class="bi bi-cloud-arrow-up"></i>
+              </div>
+              <p class="upload-instructions">
+                Drag and drop your video file here, or click to browse
+              </p>
+              <div class="upload-buttons">
+                <label for="videoFile" class="btn btn-primary btn-upload">
+                  <i class="bi bi-folder2-open"></i>
+                  Browse files
+                </label>
+              </div>
+              <input
+                type="file"
+                id="videoFile"
+                accept="video/*"
+                (change)="onFileSelected($event)"
+                style="display: none;"
+              />
+              <p class="text-muted mt-3 mb-0">
+                Supported formats: MP4, AVI, MOV, MKV (Max 100MB)
+              </p>
+            </div>
+
+            <!-- Video Preview -->
+            <div class="video-preview" *ngIf="selectedFile && previewUrl">
+              <div class="preview-container">
+                <video [src]="previewUrl" controls class="video-element"></video>
+                <div class="preview-overlay">
+                  <h5 class="mb-0">{{ selectedFile.name }}</h5>
+                  <p class="mb-0">
+                    {{ (selectedFile.size / (1024 * 1024)).toFixed(2) }} MB
+                  </p>
+                  <div class="preview-actions">
+                    <button type="button" class="btn btn-light" (click)="removeFile()" [disabled]="formLocked">
+                      <i class="bi bi-trash"></i> Remove
+                    </button>
+                    <label for="videoFile" class="btn btn-outline-light" [class.disabled]="formLocked">
+                      <i class="bi bi-arrow-repeat"></i> Change
+                    </label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Upload Progress -->
+          <div class="upload-progress" *ngIf="isUploading">
+            <div class="progress-label">
+              <span>Uploading to server…</span>
+              <span>{{ uploadProgress }}%</span>
+            </div>
+            <div class="progress-bar">
+              <div class="progress-fill" [style.width]="uploadProgress + '%'"></div>
+            </div>
+          </div>
+
+          <!-- Submit Section -->
+          <div class="submit-section">
+            <button type="button" class="btn btn-outline-secondary" routerLink="/dashboard" [disabled]="formLocked">
+              <i class="bi bi-arrow-left"></i> Cancel
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary btn-submit"
+              [disabled]="formLocked || !selectedFile">
+              <i class="bi bi-cloud-upload" *ngIf="!isUploading && !isProcessing"></i>
+              <i class="bi bi-arrow-repeat spin" *ngIf="isUploading || isProcessing"></i>
+              <span *ngIf="isUploading">Uploading…</span>
+              <span *ngIf="isProcessing">Processing…</span>
+              <span *ngIf="!formLocked">Upload &amp; Analyze</span>
+            </button>
+          </div>
+        </form>
+
+        <!-- After analysis: result actions -->
+        <div *ngIf="processingResult" class="processing-result" [class.processing-result-error]="processingResult.status === 'FAILED'">
+          <div class="processing-result-icon">
+            <i class="bi" [class.bi-check-circle-fill]="processingResult.status === 'COMPLETED'" [class.bi-exclamation-triangle-fill]="processingResult.status === 'FAILED'"></i>
+          </div>
+          <div class="processing-result-body">
+            <h3 class="processing-result-title" *ngIf="processingResult.status === 'COMPLETED'">Analysis complete</h3>
+            <h3 class="processing-result-title" *ngIf="processingResult.status === 'FAILED'">Analysis failed</h3>
+            <p class="processing-result-text text-muted mb-2" *ngIf="processingResult.status === 'FAILED'">
+              {{ processingResult.error_message || 'Something went wrong during processing. You can retry from My Videos.' }}
+            </p>
+            <p class="processing-result-text text-muted mb-0" *ngIf="processingResult.status === 'COMPLETED'">
+              Video #{{ processingResult.id }} is ready. Open metrics or your library.
+            </p>
+            <div class="processing-result-actions">
+              <a
+                *ngIf="processingResult.status === 'COMPLETED'"
+                class="btn btn-primary"
+                [routerLink]="['/metrics']"
+                [queryParams]="{ videoId: processingResult.id }"
+              >
+                <i class="bi bi-graph-up"></i> View metrics
+              </a>
+              <button type="button" class="btn btn-outline-primary" (click)="goToVideos()">
+                <i class="bi bi-collection-play"></i> My videos
+              </button>
+              <button type="button" class="btn btn-outline-secondary" (click)="clearProcessingResult()">
+                <i class="bi bi-plus-lg"></i> Upload another
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Full-card overlay while server-side analysis runs -->
+      <div class="upload-processing-overlay" *ngIf="isProcessing" aria-live="polite" aria-busy="true">
+        <div class="upload-processing-panel">
+          <app-loading-spinner [fullScreen]="false" [message]="''" size="lg"></app-loading-spinner>
+          <h2 class="upload-processing-heading">Processing your video</h2>
+          <p class="upload-processing-detail">{{ processingStatusMessage() }}</p>
+          <span *ngIf="processingVideo" class="upload-processing-badge">{{ processingVideo.status }}</span>
+          <p class="upload-processing-hint text-muted">
+            This usually takes a little while. You can leave this page — progress is saved under My Videos.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

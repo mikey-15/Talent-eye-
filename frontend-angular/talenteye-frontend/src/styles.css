@@ -1,0 +1,281 @@
+
+:root {
+  /* Primary Palette - Football Intelligence */
+  --navy-blue: #0A2342;
+  --racing-green: #006400;
+  --cream-white: #F8F9FA;
+  --charcoal-gray: #2D3748;
+  
+  /* Legacy support - mapped to new colors */
+  --primary-color: #0A2342;
+  --secondary-color: #006400;
+  
+  /* Accent & Status Colors */
+  --alert-red: #DC2626;
+  --success-green: #10B981;
+  --caution-yellow: #F59E0B;
+  --info-blue: #3B82F6;
+  
+  /* Legacy support - mapped to new accent colors */
+  --success-color: #10B981;
+  --danger-color: #DC2626;
+  --warning-color: #F59E0B;
+  
+  /* Data Visualization Colors - Position Groups */
+  --goalkeeper-purple: #7C3AED;
+  --defender-blue: #1D4ED8;
+  --midfielder-teal: #059669;
+  --forward-red: #DC2626;
+  
+  /* Neutrals */
+  --dark-color: #1e1e2d;
+  --light-color: #F8F9FA;
+  
+  /* Effects */
+  --card-shadow: 0 4px 12px rgba(10, 35, 66, 0.12);
+  --card-shadow-hover: 0 8px 24px rgba(10, 35, 66, 0.18);
+  --transition: all 0.3s ease;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+  background-color: var(--cream-white);
+  color: var(--charcoal-gray);
+  line-height: 1.6;
+}
+
+/* Typography Hierarchy */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inter', 'Roboto', sans-serif;
+  font-weight: 600;
+  color: var(--navy-blue);
+}
+
+/* Data/Stats Typography */
+.stat-value,
+.metric-value,
+.data-display {
+  font-family: 'Roboto Mono', 'Courier New', monospace;
+  font-feature-settings: 'tnum';
+  font-variant-numeric: tabular-nums;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 15px;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #888;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #555;
+}
+
+/* Toast styling */
+.toast-success {
+  background-color: var(--success-green) !important;
+}
+
+.toast-error {
+  background-color: var(--alert-red) !important;
+}
+
+.toast-warning {
+  background-color: var(--caution-yellow) !important;
+  color: var(--charcoal-gray) !important;
+}
+
+.toast-info {
+  background-color: var(--info-blue) !important;
+}
+
+/* Status Badges */
+.badge-success {
+  background-color: var(--success-green) !important;
+}
+
+.badge-danger {
+  background-color: var(--alert-red) !important;
+}
+
+.badge-warning {
+  background-color: var(--caution-yellow) !important;
+  color: var(--charcoal-gray) !important;
+}
+
+.badge-info {
+  background-color: var(--info-blue) !important;
+}
+
+/* Player Rating Gradient Classes */
+.rating-excellent {
+  color: var(--success-green);
+}
+
+.rating-good {
+  color: var(--racing-green);
+}
+
+.rating-average {
+  color: var(--caution-yellow);
+}
+
+.rating-poor {
+  color: var(--alert-red);
+}
+
+.rating-gradient {
+  background: linear-gradient(90deg, var(--alert-red) 0%, var(--caution-yellow) 50%, var(--success-green) 100%);
+}
+
+/* Custom button styles */
+.btn-primary {
+  background-color: var(--navy-blue) !important;
+  border-color: var(--navy-blue) !important;
+  transition: var(--transition);
+  font-weight: 500;
+}
+
+.btn-primary:hover {
+  background-color: #081a32 !important;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(10, 35, 66, 0.3);
+}
+
+.btn-success {
+  background-color: var(--racing-green) !important;
+  border-color: var(--racing-green) !important;
+}
+
+.btn-success:hover {
+  background-color: #004d00 !important;
+  box-shadow: 0 4px 12px rgba(0, 100, 0, 0.3);
+}
+
+.btn-danger {
+  background-color: var(--alert-red) !important;
+  border-color: var(--alert-red) !important;
+}
+
+.btn-warning {
+  background-color: var(--caution-yellow) !important;
+  border-color: var(--caution-yellow) !important;
+  color: var(--charcoal-gray) !important;
+}
+
+.btn-info {
+  background-color: var(--info-blue) !important;
+  border-color: var(--info-blue) !important;
+}
+
+/* Card styling - Card-based design for player profiles */
+.card {
+  border: 1px solid rgba(10, 35, 66, 0.1);
+  border-radius: 12px;
+  box-shadow: var(--card-shadow);
+  transition: var(--transition);
+  background-color: white;
+}
+
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: var(--card-shadow-hover);
+  border-color: rgba(10, 35, 66, 0.15);
+}
+
+.card-header {
+  background-color: var(--cream-white);
+  border-bottom: 2px solid var(--navy-blue);
+  font-weight: 600;
+  color: var(--navy-blue);
+}
+
+/* Player Profile Cards */
+.player-card {
+  border-left: 4px solid var(--racing-green);
+}
+
+.player-card.goalkeeper {
+  border-left-color: var(--goalkeeper-purple);
+}
+
+.player-card.defender {
+  border-left-color: var(--defender-blue);
+}
+
+.player-card.midfielder {
+  border-left-color: var(--midfielder-teal);
+}
+
+.player-card.forward {
+  border-left-color: var(--forward-red);
+}
+
+/* Form styling */
+.form-control:focus {
+  border-color: var(--navy-blue);
+  box-shadow: 0 0 0 0.25rem rgba(10, 35, 66, 0.15);
+}
+
+.form-label {
+  font-weight: 500;
+  color: var(--charcoal-gray);
+  margin-bottom: 0.5rem;
+}
+
+/* Animation classes */
+.fade-in {
+  animation: fadeIn 0.5s ease-in;
+}
+
+.slide-up {
+  animation: slideUp 0.4s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.spin {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

@@ -1,0 +1,62 @@
+<div class="page-wrap">
+  <div class="container">
+    <div class="page-header">
+      <h1 class="page-title">
+        <i class="bi bi-gear"></i>
+        Settings
+      </h1>
+      <p class="page-lead">
+        These preferences are stored in your browser on this device only.
+      </p>
+    </div>
+
+    <div class="settings-card">
+      <h2 class="section-title">Notifications &amp; email</h2>
+      <div class="form-check form-switch mb-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="emailTips"
+          [(ngModel)]="settings.emailTips"
+        />
+        <label class="form-check-label" for="emailTips">
+          Tips and product updates (in-app; email integration planned)
+        </label>
+      </div>
+      <div class="form-check form-switch mb-3">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="digestWeekly"
+          [(ngModel)]="settings.digestWeekly"
+        />
+        <label class="form-check-label" for="digestWeekly">
+          Weekly summary reminder (local reminder flag)
+        </label>
+      </div>
+
+      <h2 class="section-title mt-4">Accessibility</h2>
+      <div class="form-check form-switch mb-4">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          id="reducedMotion"
+          [(ngModel)]="settings.reducedMotion"
+        />
+        <label class="form-check-label" for="reducedMotion">
+          Prefer reduced motion (honoured where supported)
+        </label>
+      </div>
+
+      <div class="actions">
+        <button type="button" class="btn btn-primary" (click)="save()">
+          <i class="bi bi-check2"></i> Save
+        </button>
+        <button type="button" class="btn btn-outline-secondary" (click)="reset()">
+          Reset defaults
+        </button>
+        <a routerLink="/dashboard" class="btn btn-link">Back to dashboard</a>
+      </div>
+    </div>
+  </div>
+</div>

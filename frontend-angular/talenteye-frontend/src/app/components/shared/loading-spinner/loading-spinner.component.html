@@ -1,0 +1,12 @@
+
+<div class="spinner-overlay" *ngIf="fullScreen">
+  <div class="spinner-container">
+    <div [class]="'spinner spinner-' + size"></div>
+    <div class="spinner-message" *ngIf="message">{{ message }}</div>
+  </div>
+</div>
+
+<div class="spinner-container" *ngIf="!fullScreen">
+  <div [class]="'spinner spinner-' + size"></div>
+  <div class="spinner-message" *ngIf="message">{{ message }}</div>
+</div>

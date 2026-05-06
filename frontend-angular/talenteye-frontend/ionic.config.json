@@ -1,0 +1,7 @@
+{
+  "name": "talenteye-frontend",
+  "type": "angular",
+  "integrations": {
+    "capacitor": {}
+  }
+}

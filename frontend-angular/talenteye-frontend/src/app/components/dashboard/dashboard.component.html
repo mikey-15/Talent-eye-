@@ -1,0 +1,291 @@
+<div class="dashboard-container">
+  <div class="dashboard-background">
+    <div class="bg-grid"></div>
+    <div class="bg-gradient"></div>
+    <div class="bg-particles"></div>
+  </div>
+
+  <main class="dashboard-main">
+    <div class="loading-overlay" *ngIf="isLoading">
+      <div class="loading-content">
+        <div class="loading-spinner">
+          <div class="spinner"></div>
+        </div>
+        <p>Loading your dashboard…</p>
+      </div>
+    </div>
+
+    <div *ngIf="!isLoading" class="dashboard-content">
+      <header class="dashboard-header">
+        <div class="header-content">
+          <div class="user-greeting">
+            <h1 class="welcome-title">
+              <span class="greeting">Welcome back</span>
+              <span class="user-name">{{ currentUser?.first_name || currentUser?.username }}!</span>
+            </h1>
+            <p class="welcome-subtitle">
+              <i class="bi bi-camera-video"></i>
+              Upload drill videos, view analysis status, and open detailed performance metrics when processing completes.
+            </p>
+          </div>
+          <div class="header-actions">
+            <div class="date-display">
+              <i class="bi bi-calendar3"></i>
+              <span>{{ currentDate | date:'fullDate' }}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="quick-stats">
+          <div class="quick-stat">
+            <div class="stat-icon">
+              <i class="bi bi-play-circle"></i>
+            </div>
+            <div>
+              <div class="stat-number">{{ stats.totalVideos || 0 }}</div>
+              <div class="stat-label">Uploads</div>
+            </div>
+          </div>
+          <div class="quick-stat">
+            <div class="stat-icon">
+              <i class="bi bi-check-circle"></i>
+            </div>
+            <div>
+              <div class="stat-number">{{ stats.processedVideos || 0 }}</div>
+              <div class="stat-label">Analyzed</div>
+            </div>
+          </div>
+          <div class="quick-stat">
+            <div class="stat-icon">
+              <i class="bi bi-hourglass-split"></i>
+            </div>
+            <div>
+              <div class="stat-number">{{ stats.pendingVideos || 0 }}</div>
+              <div class="stat-label">In queue</div>
+            </div>
+          </div>
+          <div class="quick-stat">
+            <div class="stat-icon">
+              <i class="bi bi-activity"></i>
+            </div>
+            <div>
+              <div class="stat-number">{{ stats.averageScore || 0 | number:'1.0-1' }}</div>
+              <div class="stat-label">Latest video (0–100)</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="dashboard-grid">
+        <div class="dashboard-column left">
+          <section class="stats-section">
+            <h2 class="section-title">
+              <i class="bi bi-activity"></i>
+              Latest analyzed clip
+            </h2>
+            <p class="section-lead text-muted small mb-3">
+              Values come from your most recent <strong>completed</strong> upload. Open <a routerLink="/metrics">Performance</a> to pick another video or see coaching tips.
+            </p>
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon success">
+                    <i class="bi bi-speedometer2"></i>
+                  </div>
+                </div>
+                <div class="stat-value">{{ stats.averageScore || 0 | number:'1.1-1' }}</div>
+                <div class="stat-label">Normalized average (0–100)</div>
+                <div class="stat-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="stats.averageScore || 0"></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon info">
+                    <i class="bi bi-clock-history"></i>
+                  </div>
+                </div>
+                <div class="stat-value">
+                  {{ playerKpis.cadence != null ? (playerKpis.cadence | number:'1.0-1') : '—' }}
+                </div>
+                <div class="stat-label">Tempo (steps/min)</div>
+                <div class="stat-progress">
+                  <div class="progress-bar">
+                    <div
+                      class="progress-fill"
+                      [style.width.%]="playerKpis.cadence != null ? (playerKpis.cadence / metricNorm.CADENCE_SPM_AT_100) * 100 : 0"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon warning">
+                    <i class="bi bi-eye"></i>
+                  </div>
+                </div>
+                <div class="stat-value">{{ playerKpis.scans != null ? playerKpis.scans : '—' }}</div>
+                <div class="stat-label">Scanning</div>
+                <div class="stat-progress">
+                  <div class="progress-bar">
+                    <div
+                      class="progress-fill"
+                      [style.width.%]="playerKpis.scans != null ? (playerKpis.scans / metricNorm.SCANS_COUNT_AT_100) * 100 : 0"
+                    ></div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="stat-card">
+                <div class="stat-header">
+                  <div class="stat-icon danger">
+                    <i class="bi bi-bezier2"></i>
+                  </div>
+                </div>
+                <div class="stat-value">{{ playerKpis.touch != null ? (playerKpis.touch | number:'1.0-1') : '—' }}</div>
+                <div class="stat-label">Close control (px)</div>
+                <div class="stat-progress">
+                  <div class="progress-bar">
+                    <div class="progress-fill" [style.width.%]="touchProgressPercent()"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="chart-section">
+            <div class="section-header">
+              <h2 class="section-title">
+                <i class="bi bi-graph-up-arrow"></i>
+                Recent analyzed uploads
+              </h2>
+            </div>
+            <p class="text-muted small mb-2">
+              Up to seven completed videos, composite 0–100 score per upload (same basis as the metrics dashboard).
+            </p>
+            <div class="chart-container">
+              <canvas
+                baseChart
+                [type]="'line'"
+                [data]="performanceChartData"
+                [options]="performanceChartOptions"
+              ></canvas>
+            </div>
+          </section>
+        </div>
+
+        <div class="dashboard-column right">
+          <section class="recent-videos">
+            <div class="section-header">
+              <h2 class="section-title">
+                <i class="bi bi-camera-video"></i>
+                Recent uploads
+              </h2>
+              <a routerLink="/upload" class="btn-upload">
+                <i class="bi bi-plus"></i>
+                Upload
+              </a>
+            </div>
+            <p class="text-muted small mb-2">
+              <a routerLink="/videos" class="link-secondary">View all videos →</a>
+            </p>
+            <div class="videos-list">
+              <div class="video-card" *ngFor="let video of recentVideos">
+                <div class="video-preview">
+                  <i class="bi bi-play-circle"></i>
+                  <div class="video-badge" [class]="getVideoStatusClass(video.status)">
+                    {{ video.status }}
+                  </div>
+                </div>
+                <div class="video-info">
+                  <h4 class="video-title">{{ video.drill_name || 'Drill video' }}</h4>
+                  <div class="video-meta">
+                    <span class="video-date">
+                      <i class="bi bi-calendar"></i>
+                      {{ video.uploaded_at | date:'shortDate' }}
+                    </span>
+                  </div>
+                  <div class="video-actions">
+                    <button type="button" class="btn-action" (click)="viewVideoDetails(video)">
+                      <i class="bi bi-list-ul"></i>
+                      All videos
+                    </button>
+                    <button
+                      type="button"
+                      class="btn-action primary"
+                      (click)="analyzeVideo(video)"
+                      *ngIf="video.status === 'COMPLETED'"
+                    >
+                      <i class="bi bi-graph-up"></i>
+                      Metrics
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="empty-state" *ngIf="recentVideos.length === 0">
+              <div class="empty-icon">
+                <i class="bi bi-camera-video-off"></i>
+              </div>
+              <h3>No uploads yet</h3>
+              <p>Record a drill and upload it to get AI breakdowns and feedback.</p>
+              <a routerLink="/upload" class="btn-primary">
+                <i class="bi bi-cloud-upload"></i>
+                Upload video
+              </a>
+            </div>
+          </section>
+
+          <section class="quick-actions">
+            <h2 class="section-title">
+              <i class="bi bi-lightning-charge"></i>
+              Quick actions
+            </h2>
+            <div class="actions-grid">
+              <a routerLink="/upload" class="action-card">
+                <div class="action-icon primary">
+                  <i class="bi bi-cloud-upload"></i>
+                </div>
+                <div class="action-content">
+                  <h4>Upload</h4>
+                  <p>New drill video</p>
+                </div>
+              </a>
+              <a routerLink="/videos" class="action-card">
+                <div class="action-icon success">
+                  <i class="bi bi-collection-play"></i>
+                </div>
+                <div class="action-content">
+                  <h4>My videos</h4>
+                  <p>Status and history</p>
+                </div>
+              </a>
+              <a routerLink="/metrics" class="action-card">
+                <div class="action-icon info">
+                  <i class="bi bi-graph-up"></i>
+                </div>
+                <div class="action-content">
+                  <h4>Performance</h4>
+                  <p>Metrics and coaching clips</p>
+                </div>
+              </a>
+              <a routerLink="/profile" class="action-card">
+                <div class="action-icon warning">
+                  <i class="bi bi-person-circle"></i>
+                </div>
+                <div class="action-content">
+                  <h4>Profile</h4>
+                  <p>Details scouts see</p>
+                </div>
+              </a>
+            </div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

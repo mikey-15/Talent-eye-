@@ -1,0 +1,83 @@
+<div class="scout-dash">
+  <div class="container py-4">
+    <header class="dash-header mb-4">
+      <p class="text-muted small mb-1">Scout workspace</p>
+      <h1 class="h3 mb-2">
+        Welcome{{ user?.first_name ? ', ' + (user?.first_name || '') : '' }}
+      </h1>
+      <p class="text-muted mb-0">
+        Browse the player directory, shortlist prospects, and export reports. Performance scores come from analyzed drill videos only.
+      </p>
+    </header>
+
+    <div *ngIf="isLoading" class="text-center py-5">
+      <app-loading-spinner [fullScreen]="false" message="Loading scout overview…"></app-loading-spinner>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+      <div class="row g-3 mb-4">
+        <div class="col-6 col-md-3">
+          <div class="stat-tile">
+            <div class="stat-num">{{ totalPlayers }}</div>
+            <div class="stat-lbl">Players in directory</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-tile">
+            <div class="stat-num">{{ playersWithVideos }}</div>
+            <div class="stat-lbl">With analyzed video</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-tile">
+            <div class="stat-num">{{ shortlistCount }}</div>
+            <div class="stat-lbl">Your shortlist</div>
+          </div>
+        </div>
+        <div class="col-6 col-md-3">
+          <div class="stat-tile stat-tile-wide">
+            <div class="stat-num stat-num-sm">
+              <ng-container *ngIf="topProspectRating != null; else noTop">
+                {{ topProspectRating | number:'1.0-1' }}
+              </ng-container>
+              <ng-template #noTop>—</ng-template>
+            </div>
+            <div class="stat-lbl">Top rated prospect</div>
+            <div class="stat-sub text-muted small" *ngIf="topProspectName">{{ topProspectName }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row g-3">
+        <div class="col-md-6 col-lg-4">
+          <button type="button" class="action-card w-100 text-start" (click)="goPlayers()">
+            <i class="bi bi-people-fill action-icon"></i>
+            <h2 class="h6 mb-1">Player directory</h2>
+            <p class="small text-muted mb-0">Search and filter all registered players.</p>
+          </button>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <button type="button" class="action-card w-100 text-start" (click)="goShortlist()">
+            <i class="bi bi-star-fill action-icon"></i>
+            <h2 class="h6 mb-1">Shortlist</h2>
+            <p class="small text-muted mb-0">Players you have saved for follow-up.</p>
+          </button>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <button type="button" class="action-card w-100 text-start" (click)="goCompare()">
+            <i class="bi bi-bar-chart-steps action-icon"></i>
+            <h2 class="h6 mb-1">Compare</h2>
+            <p class="small text-muted mb-0">Side-by-side metrics for selected players.</p>
+          </button>
+        </div>
+        <div class="col-md-6 col-lg-4">
+          <button type="button" class="action-card w-100 text-start" (click)="exportDirectory()">
+            <i class="bi bi-download action-icon"></i>
+            <h2 class="h6 mb-1">Export directory CSV</h2>
+            <p class="small text-muted mb-0">Includes profile fields and video-based ratings.</p>
+          </button>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+</div>

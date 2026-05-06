@@ -1,0 +1,231 @@
+
+<div class="profile-container">
+  <div class="container">
+    <!-- Header -->
+    <div class="profile-header">
+      <h1 class="profile-title">
+        <i class="bi bi-person-circle"></i>
+        My Profile
+      </h1>
+      <p class="profile-subtitle">
+        Manage your personal information and football profile
+      </p>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <app-loading-spinner [fullScreen]="false" message="Loading profile..."></app-loading-spinner>
+    </div>
+
+    <!-- Profile Content -->
+    <div *ngIf="!isLoading" class="profile-content">
+      <!-- Sidebar -->
+      <div class="profile-sidebar">
+        <div class="profile-avatar">
+          <i class="bi bi-person-fill"></i>
+        </div>
+        
+        <h2 class="profile-name">{{ authService.getCurrentUser()?.first_name }} {{ authService.getCurrentUser()?.last_name }}</h2>
+        
+        <div class="profile-role">
+          <i class="bi bi-person-badge"></i>
+          {{ authService.getCurrentUser()?.role === 'PLAYER' ? 'Football Player' : 'Talent Scout' }}
+        </div>
+        
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-label">Username</span>
+            <span class="stat-value">{{ authService.getCurrentUser()?.username }}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Email</span>
+            <span class="stat-value">{{ authService.getCurrentUser()?.email }}</span>
+          </div>
+          <div class="stat-item" *ngIf="profile?.date_of_birth">
+            <span class="stat-label">Age</span>
+            <span class="stat-value">{{ calculateAge(profile?.date_of_birth) }} years</span>
+          </div>
+          <div class="stat-item" *ngIf="profile?.height_cm">
+            <span class="stat-label">Height</span>
+            <span class="stat-value">{{ getHeightInFeet(profile?.height_cm) }}</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Main Content -->
+      <div class="profile-main">
+        <div class="section-header">
+          <h3 class="section-title">
+            <i class="bi bi-info-circle"></i>
+            Football Profile
+          </h3>
+          <div class="section-actions">
+            <button 
+              *ngIf="!isEditing"
+              class="btn btn-primary"
+              (click)="toggleEdit()"
+            >
+              <i class="bi bi-pencil"></i> Edit Profile
+            </button>
+            <button 
+              *ngIf="isEditing"
+              class="btn btn-outline-secondary"
+              (click)="toggleEdit()"
+            >
+              <i class="bi bi-x"></i> Cancel
+            </button>
+          </div>
+        </div>
+
+        <!-- Profile Form/Display -->
+        <form *ngIf="isEditing; else displayMode" 
+              [formGroup]="profileForm" 
+              (ngSubmit)="onSubmit()"
+              class="profile-form">
+          
+          <!-- Date of Birth -->
+          <div class="form-group">
+            <label for="date_of_birth" class="form-label">Date of Birth</label>
+            <input
+              type="date"
+              id="date_of_birth"
+              formControlName="date_of_birth"
+              class="form-control"
+              [class.is-invalid]="date_of_birth?.invalid && date_of_birth?.touched"
+            />
+          </div>
+
+          <!-- Height -->
+          <div class="form-group">
+            <label for="height_cm" class="form-label">Height (cm)</label>
+            <input
+              type="number"
+              id="height_cm"
+              formControlName="height_cm"
+              class="form-control"
+              placeholder="Enter height in centimeters"
+              [class.is-invalid]="height_cm?.invalid && height_cm?.touched"
+            />
+            <div *ngIf="height_cm?.invalid && height_cm?.touched" class="invalid-feedback">
+              <div *ngIf="height_cm?.errors?.['min']">Height must be at least 100cm</div>
+              <div *ngIf="height_cm?.errors?.['max']">Height cannot exceed 250cm</div>
+            </div>
+            <small class="text-muted" *ngIf="profileForm.value.height_cm">
+              {{ getHeightInFeet(profileForm.value.height_cm) }}
+            </small>
+          </div>
+
+          <!-- Preferred Position -->
+          <div class="form-group">
+            <label for="preferred_position" class="form-label">Preferred Position</label>
+            <select
+              id="preferred_position"
+              formControlName="preferred_position"
+              class="form-select"
+            >
+              <option value="">Select position...</option>
+              <option *ngFor="let position of positions" [value]="position">
+                {{ position }}
+              </option>
+            </select>
+          </div>
+
+          <!-- Dominant Foot -->
+          <div class="form-group">
+            <label class="form-label">Dominant Foot</label>
+            <div class="foot-options">
+              <div *ngFor="let foot of footOptions" 
+                   class="foot-option"
+                   [class.selected]="dominant_foot?.value === foot.value"
+                   (click)="dominant_foot?.setValue(foot.value)">
+                <i [class]="foot.icon + ' foot-icon'"></i>
+                <span class="foot-label">{{ foot.label }}</span>
+              </div>
+            </div>
+            <input type="hidden" formControlName="dominant_foot">
+          </div>
+
+          <!-- Location -->
+          <div class="form-group full-width">
+            <label for="location" class="form-label">Location</label>
+            <input
+              type="text"
+              id="location"
+              formControlName="location"
+              class="form-control"
+              placeholder="City, Country"
+            />
+          </div>
+
+          <!-- Form Actions -->
+          <div class="form-actions">
+            <button type="button" class="btn btn-outline-secondary" (click)="toggleEdit()">
+              Cancel
+            </button>
+            <button type="submit" class="btn btn-primary" [disabled]="profileForm.invalid">
+              Save Changes
+            </button>
+          </div>
+        </form>
+
+        <!-- Display Mode -->
+        <ng-template #displayMode>
+          <div class="info-display">
+            <div class="info-row">
+              <span class="info-label">
+                <i class="bi bi-calendar"></i> Date of Birth
+              </span>
+              <span class="info-value" [class.empty]="!profile?.date_of_birth">
+                {{ profile?.date_of_birth ? (profile?.date_of_birth | date:'longDate') : 'Not set' }}
+                <span *ngIf="profile?.date_of_birth" class="text-muted ms-2">
+                  ({{ calculateAge(profile?.date_of_birth) }} years)
+                </span>
+              </span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">
+                <i class="bi bi-rulers"></i> Height
+              </span>
+              <span class="info-value" [class.empty]="!profile?.height_cm">
+                {{ profile?.height_cm ? profile?.height_cm + ' cm (' + getHeightInFeet(profile?.height_cm) + ')' : 'Not set' }}
+              </span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">
+                <i class="bi bi-geo-alt"></i> Preferred Position
+              </span>
+              <span class="info-value" [class.empty]="!profile?.preferred_position">
+                {{ profile?.preferred_position || 'Not set' }}
+              </span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">
+                <i class="bi bi-foot"></i> Dominant Foot
+              </span>
+              <span class="info-value" [class.empty]="!profile?.dominant_foot">
+                {{ profile?.dominant_foot || 'Not set' }}
+              </span>
+            </div>
+
+            <div class="info-row">
+              <span class="info-label">
+                <i class="bi bi-geo"></i> Location
+              </span>
+              <span class="info-value" [class.empty]="!profile?.location">
+                {{ profile?.location || 'Not set' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="alert alert-info mt-4">
+            <i class="bi bi-info-circle me-2"></i>
+            Complete your profile to get better recommendations and visibility to scouts.
+          </div>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</div>

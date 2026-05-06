@@ -1,0 +1,22 @@
+.shortlist-page {
+  min-height: calc(100vh - 120px);
+  background: #f8fafc;
+}
+
+.shortlist-row {
+  cursor: pointer;
+}
+
+.shortlist-row:hover {
+  background: #f1f5f9;
+}
+
+.list-avatar {
+  object-fit: cover;
+}
+
+.empty-box {
+  background: #fff;
+  border-radius: 12px;
+  border: 1px dashed #cbd5e1;
+}

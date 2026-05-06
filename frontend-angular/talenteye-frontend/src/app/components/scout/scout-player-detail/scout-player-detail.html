@@ -1,0 +1,400 @@
+<!-- src/app/components/scout/scout-player-detail/scout-player-detail.component.html -->
+<div class="player-detail-container">
+  <div class="container">
+    <!-- Back Button -->
+        <div class="back-button">
+      <button class="btn btn-outline-secondary" (click)="router.navigate(['/scout/players'])">
+        <i class="bi bi-arrow-left"></i> Directory
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <app-loading-spinner [fullScreen]="false" message="Loading player details..."></app-loading-spinner>
+    </div>
+
+    <!-- Player Details -->
+    <div *ngIf="!isLoading && player" class="fade-in">
+      <!-- Player Header -->
+      <div class="player-header">
+        <div class="player-avatar-large">
+          <img *ngIf="profileImageUrl() as pimg" [src]="pimg" alt="" class="avatar-img rounded-circle" />
+          <i *ngIf="!profileImageUrl()" class="bi bi-person-fill"></i>
+        </div>
+        <div class="player-info-header">
+          <h1 class="player-name">{{ player.username }}</h1>
+          <div class="player-meta">
+            <span *ngIf="player.date_of_birth">
+              <i class="bi bi-calendar"></i> {{ calculateAge(player.date_of_birth) }} years
+            </span>
+            <span *ngIf="player.height_cm">
+              <i class="bi bi-rulers"></i> {{ player.height_cm }} cm ({{ getHeightInFeet(player.height_cm) }})
+            </span>
+            <span *ngIf="player.location">
+              <i class="bi bi-geo"></i> {{ player.location }}
+            </span>
+          </div>
+          <div *ngIf="player.preferred_position">
+            <span [class]="getPositionBadgeClass(player.preferred_position)" class="fs-6">
+              {{ player.preferred_position }}
+            </span>
+            <span class="ms-2">
+              <i [class]="getFootIcon(player.dominant_foot)"
+                 [style.color]="getFootColor(player.dominant_foot)"></i>
+              {{ player.dominant_foot || 'Foot not specified' }}
+            </span>
+          </div>
+        </div>
+        <div class="player-actions-header">
+          <button
+            class="btn"
+            [class.btn-success]="!isShortlisted"
+            [class.btn-outline-secondary]="isShortlisted"
+            (click)="toggleShortlist()"
+          >
+            <i class="bi" [class.bi-star-fill]="isShortlisted" [class.bi-star]="!isShortlisted"></i>
+            {{ isShortlisted ? 'Remove from shortlist' : 'Shortlist' }}
+          </button>
+          <button class="btn btn-primary" (click)="contactPlayer()">
+            <i class="bi bi-envelope"></i> Contact
+          </button>
+        </div>
+      </div>
+
+      <!-- Navigation Tabs -->
+      <ul class="nav nav-tabs">
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'overview'" 
+             (click)="setActiveTab('overview')">
+            <i class="bi bi-info-circle"></i> Overview
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'metrics'" 
+             (click)="setActiveTab('metrics')">
+            <i class="bi bi-graph-up"></i> Performance Metrics
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'videos'" 
+             (click)="setActiveTab('videos')">
+            <i class="bi bi-camera-video"></i> Videos
+          </a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" [class.active]="activeTab === 'reports'"
+             (click)="setActiveTab('reports')">
+            <i class="bi bi-file-earmark-text"></i> Reports
+          </a>
+        </li>
+      </ul>
+
+      <!-- Tab Content -->
+      <div class="tab-content">
+        <!-- Overview Tab -->
+        <div *ngIf="activeTab === 'overview'" class="overview-grid">
+          <!-- Sidebar -->
+          <div class="player-profile-sidebar">
+            <div class="profile-section">
+              <h3 class="section-title">
+                <i class="bi bi-person"></i>
+                Personal Information
+              </h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">
+                    <i class="bi bi-person-badge"></i> Username
+                  </span>
+                  <span class="info-value">{{ player.username }}</span>
+                </div>
+                <div class="info-item" *ngIf="player.email">
+                  <span class="info-label">
+                    <i class="bi bi-envelope"></i> Email
+                  </span>
+                  <span class="info-value">{{ player.email }}</span>
+                </div>
+                <div class="info-item" *ngIf="player.date_of_birth">
+                  <span class="info-label">
+                    <i class="bi bi-calendar"></i> Date of Birth
+                  </span>
+                  <span class="info-value">{{ player.date_of_birth | date:'longDate' }}</span>
+                </div>
+                <div class="info-item" *ngIf="player.height_cm">
+                  <span class="info-label">
+                    <i class="bi bi-rulers"></i> Height
+                  </span>
+                  <span class="info-value">{{ player.height_cm }} cm</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-section">
+              <h3 class="section-title">
+                <i class="bi bi-geo-alt"></i>
+                Football Profile
+              </h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">
+                    <i class="bi bi-geo-alt"></i> Position
+                  </span>
+                  <span class="info-value">{{ player.preferred_position || 'Not specified' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">
+                    <i class="bi bi-foot"></i> Dominant Foot
+                  </span>
+                  <span class="info-value">{{ player.dominant_foot || 'Not specified' }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">
+                    <i class="bi bi-geo"></i> Location
+                  </span>
+                  <span class="info-value">{{ player.location || 'Not specified' }}</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="profile-section">
+              <h3 class="section-title">
+                <i class="bi bi-graph-up"></i>
+                Performance Summary
+              </h3>
+              <div class="info-grid">
+                <div class="info-item">
+                  <span class="info-label">
+                    <i class="bi bi-camera-video"></i> Videos analyzed
+                  </span>
+                  <span class="info-value">{{ videosAnalyzedCount() }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">
+                    <i class="bi bi-speedometer"></i> Overall rating
+                  </span>
+                  <span class="info-value">{{ overallRatingDisplay() }}</span>
+                </div>
+                <div class="info-item">
+                  <span class="info-label">
+                    <i class="bi bi-graph-up"></i> Metric samples
+                  </span>
+                  <span class="info-value">{{ metrics.length }}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Main Content -->
+          <div class="player-metrics-main">
+            <!-- Radar Chart -->
+            <div class="chart-card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="bi bi-radar"></i>
+                  Performance radar
+                </h3>
+                <p class="small text-muted mb-0">Each spoke is a 0–100 score from analyzed clips (only axes with real data are shown).</p>
+              </div>
+              <div class="chart-container">
+                <canvas baseChart
+                        [data]="radarChartData"
+                        [options]="radarChartOptions"
+                        [type]="'radar'">
+                </canvas>
+              </div>
+            </div>
+
+            <!-- Bar Chart -->
+            <div class="chart-card">
+              <div class="card-header">
+                <h3 class="card-title">
+                  <i class="bi bi-bar-chart"></i>
+                  Metric Comparison
+                </h3>
+              </div>
+              <div class="chart-container">
+                <canvas baseChart
+                        [data]="barChartData"
+                        [options]="barChartOptions"
+                        [type]="'bar'">
+                </canvas>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Metrics Tab -->
+        <div *ngIf="activeTab === 'metrics'">
+          <p class="text-muted small mb-3" *ngIf="metrics.length">
+            Each score is the <strong>average quality</strong> across finished uploads on that skill (0–100%, higher is better).
+          </p>
+          <div class="metrics-grid">
+          <div *ngFor="let metric of metrics" class="metric-card">
+            <div class="metric-header">
+              <div class="metric-icon">
+                <i class="bi bi-graph-up"></i>
+              </div>
+              <h4 class="metric-name">{{ metric.metric_name | coachMetricTitle }}</h4>
+            </div>
+            <div class="metric-value">
+              {{ metricValueDisplay(metric) }}
+              <span class="text-muted fs-6 ms-1">{{ metricUnitDisplay(metric) }}</span>
+            </div>
+            <div class="metric-progress">
+              <div class="progress">
+                <div
+                  class="progress-bar bg-primary"
+                  role="progressbar"
+                  [style.width.%]="normalizeBar(metric)"
+                ></div>
+              </div>
+            </div>
+            <div class="metric-feedback text-muted small">
+              Skill rating from video analysis (club-friendly scale).
+            </div>
+          </div>
+
+          <div *ngIf="metrics.length === 0" class="empty-state metric-card">
+            <div class="empty-icon">
+              <i class="bi bi-graph-up"></i>
+            </div>
+            <h3 class="empty-title">No Metrics Available</h3>
+            <p class="empty-description">
+              This player hasn't uploaded any videos for analysis yet.
+            </p>
+          </div>
+          </div>
+        </div>
+
+        <!-- Videos Tab -->
+        <div *ngIf="activeTab === 'videos'">
+          <div *ngIf="drillVideos().length; else noDrillVideos" class="scout-video-list">
+            <article class="scout-video-card mb-4" *ngFor="let row of drillVideos()">
+              <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-2">
+                <div>
+                  <span class="fw-semibold">{{ row.drill_name || ('Clip #' + row.video_id) }}</span>
+                  <span class="text-muted small ms-2" *ngIf="row.uploaded_at">{{ row.uploaded_at | date:'medium' }}</span>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-primary" (click)="setActiveTab('metrics')">
+                  <i class="bi bi-graph-up"></i> View scores
+                </button>
+              </div>
+              <video
+                *ngIf="drillVideoPlayableUrl(row) as src"
+                class="w-100 rounded shadow-sm"
+                [src]="src"
+                controls
+                playsinline
+                preload="metadata"
+              ></video>
+              <p *ngIf="!drillVideoPlayableUrl(row)" class="text-muted small mb-0">
+                Video file is not available from the server for this clip.
+              </p>
+            </article>
+          </div>
+          <ng-template #noDrillVideos>
+            <div class="empty-state">
+              <div class="empty-icon">
+                <i class="bi bi-camera-video"></i>
+              </div>
+              <h3 class="empty-title">No analyzed videos yet</h3>
+              <p class="empty-description">
+                When this player uploads and finishes analysis, clips will appear here for you to watch.
+              </p>
+            </div>
+          </ng-template>
+        </div>
+
+        <!-- Reports Tab -->
+        <div *ngIf="activeTab === 'reports'" class="reports-tab">
+          <p class="text-muted small">
+            Export data for offline use:
+            <button type="button" class="btn btn-sm btn-outline-secondary ms-2" (click)="downloadCsvMetricsExport()">
+              Download metrics CSV
+            </button>
+            <button
+              type="button"
+              class="btn btn-sm btn-outline-secondary ms-2"
+              (click)="exportWrittenReportsDocument()"
+              [disabled]="!writtenReports.length"
+            >
+              Export written reports (.txt)
+            </button>
+          </p>
+          <p class="text-muted small">
+            Below, save narrative reports for your club (stored on the server for your account).
+          </p>
+          <div class="card mb-4">
+            <div class="card-body">
+              <h3 class="h6 card-title">New written report</h3>
+              <div class="mb-3">
+                <label class="form-label small text-muted" for="reportTitle">Title (optional)</label>
+                <input
+                  id="reportTitle"
+                  class="form-control"
+                  [(ngModel)]="reportTitleDraft"
+                  placeholder="e.g. Trial match — midfield impressions"
+                />
+              </div>
+              <div class="mb-3">
+                <label class="form-label small text-muted" for="reportBody">Report</label>
+                <textarea
+                  id="reportBody"
+                  class="form-control"
+                  rows="6"
+                  [(ngModel)]="reportBodyDraft"
+                  placeholder="Strengths, risks, recommended follow-up…"
+                ></textarea>
+              </div>
+              <button
+                type="button"
+                class="btn btn-primary"
+                [disabled]="savingReport"
+                (click)="submitWrittenReport()"
+              >
+                <span *ngIf="savingReport" class="spinner-border spinner-border-sm me-2" role="status"></span>
+                Save report
+              </button>
+            </div>
+          </div>
+          <h3 class="h6">Previous reports</h3>
+          <div *ngIf="writtenReports.length; else noReports" class="list-group">
+            <div *ngFor="let r of writtenReports" class="list-group-item">
+              <div class="d-flex justify-content-between align-items-start gap-2">
+                <div>
+                  <div class="fw-semibold" *ngIf="r.title">{{ r.title }}</div>
+                  <div class="text-muted small">{{ r.created_at | date:'medium' }}</div>
+                </div>
+              </div>
+              <p class="mb-0 mt-2 small" style="white-space: pre-wrap;">{{ r.body }}</p>
+            </div>
+          </div>
+          <ng-template #noReports>
+            <p class="text-muted small mb-0">No written reports yet for this player.</p>
+          </ng-template>
+        </div>
+      </div>
+
+      <!-- Scout Notes -->
+      <div class="scout-notes-section">
+        <div class="notes-header">
+          <h3 class="notes-title">
+            <i class="bi bi-journal-text"></i>
+            Scout Notes
+          </h3>
+        </div>
+        <textarea
+          class="notes-textarea"
+          placeholder="Add your notes about this player..."
+          [(ngModel)]="scoutNotesDraft"
+          rows="5"
+        ></textarea>
+        <div class="notes-actions">
+          <button type="button" class="btn btn-outline-secondary" (click)="scoutNotesClear()">Clear</button>
+          <button type="button" class="btn btn-primary" (click)="scoutNotesSave()">
+            {{ isShortlisted ? 'Save notes' : 'Save notes (adds to shortlist)' }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

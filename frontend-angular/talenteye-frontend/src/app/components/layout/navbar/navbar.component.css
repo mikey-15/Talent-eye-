@@ -1,0 +1,113 @@
+
+.navbar {
+  background: linear-gradient(135deg, #0A2342 0%, #0d2d52 100%);
+  box-shadow: 0 4px 12px rgba(10, 35, 66, 0.15);
+  padding: 1rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 1030;
+  border-bottom: 3px solid #006400;
+}
+
+.navbar-brand {
+  color: white !important;
+  font-weight: 700;
+  font-size: 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: 'Inter', 'Roboto', sans-serif;
+}
+
+.logo-icon {
+  display: flex;
+  align-items: center;
+}
+
+.logo-text {
+  color: white;
+  font-weight: 700;
+  font-size: 1.5rem;
+}
+
+.logo-accent {
+  color: #10B981;
+}
+
+.nav-link {
+  color: rgba(255, 255, 255, 0.9) !important;
+  font-weight: 500;
+  margin: 0 8px;
+  padding: 8px 16px !important;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+}
+
+.nav-link:hover {
+  color: white !important;
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: translateY(-2px);
+}
+
+.nav-link.active {
+  background-color: rgba(0, 100, 0, 0.2);
+  color: white !important;
+  border-left: 3px solid #10B981;
+  padding-left: 13px !important;
+}
+
+.user-dropdown {
+  color: white !important;
+  background-color: rgba(16, 185, 129, 0.15);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+  border-radius: 6px;
+  padding: 8px 16px;
+}
+
+.user-dropdown:hover {
+  background-color: rgba(16, 185, 129, 0.25);
+  border-color: rgba(16, 185, 129, 0.5);
+}
+
+.user-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #006400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: bold;
+  margin-right: 8px;
+}
+
+.dropdown-menu {
+  border: none;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 8px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.dropdown-item {
+  padding: 12px 20px;
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-divider {
+  margin: 0;
+}
+
+.navbar-toggler {
+  border: none;
+  color: white;
+}
+
+.navbar-toggler:focus {
+  box-shadow: none;
+}

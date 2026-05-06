@@ -1,0 +1,409 @@
+<div class="home-container">
+  <!-- Background Elements -->
+  <div class="football-field-bg">
+    <!-- Keep existing field background -->
+  </div>
+
+  <div class="gradient-overlay"></div>
+  
+  <!-- Hero Background Image Section -->
+  <div class="hero-visual-section">
+    <div class="hero-image-container">
+      <!-- Main hero image with football analytics theme -->
+      <img 
+        src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?q=80&w=2071&auto=format&fit=crop" 
+        alt="Football analytics dashboard showing player statistics"
+        class="hero-main-image"
+      >
+      
+      <!-- Overlay stats and analytics elements -->
+      <div class="analytics-overlay">
+        <!-- Stats cluster with radar chart -->
+        <div class="stats-cluster">
+          <div class="data-point live" data-position="top">
+            <div class="data-value">92%</div>
+            <div class="data-label">Scanning</div>
+          </div>
+          <div class="data-point live" data-position="left">
+            <div class="data-value">42 px</div>
+            <div class="data-label">Close control</div>
+          </div>
+          <div class="data-point live" data-position="right">
+            <div class="data-value">142</div>
+            <div class="data-label">Tempo</div>
+          </div>
+          
+          <!-- Radar chart visualization -->
+          <div class="radar-chart">
+            <div class="radar-grid">
+              <div class="grid-circle"></div>
+              <div class="grid-circle"></div>
+              <div class="grid-circle"></div>
+            </div>
+            <div class="radar-polygon"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <!-- Header/Navigation -->
+    <div class="app-header" *ngIf="!isAuthenticated">
+      <div class="logo">
+        <div class="logo-icon">
+          <!-- Updated logo with football analytics symbol -->
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" 
+                  fill="url(#gradient)"/>
+            <path d="M16 6C10.477 6 6 10.477 6 16C6 21.523 10.477 26 16 26C21.523 26 26 21.523 26 16C26 10.477 21.523 6 16 6Z" 
+                  fill="white" fill-opacity="0.9"/>
+            <path d="M16 10C12.686 10 10 12.686 10 16C10 19.314 12.686 22 16 22C19.314 22 22 19.314 22 16C22 12.686 19.314 10 16 10Z" 
+                  fill="url(#gradient)"/>
+            <path d="M16 13C14.343 13 13 14.343 13 16C13 17.657 14.343 19 16 19C17.657 19 19 17.657 19 16C19 14.343 17.657 13 16 13Z" 
+                  fill="white"/>
+            <!-- Crosshair lines -->
+            <path d="M16 6L16 26" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            <path d="M6 16L26 16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+            <!-- Diagonal lines -->
+            <path d="M10 10L22 22" stroke="white" stroke-width="1" stroke-linecap="round" stroke-opacity="0.7"/>
+            <path d="M22 10L10 22" stroke="white" stroke-width="1" stroke-linecap="round" stroke-opacity="0.7"/>
+            <defs>
+              <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="#006400"/>
+                <stop offset="100%" stop-color="#10B981"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <span class="logo-text">Talent<span class="logo-accent">Eye</span></span>
+      </div>
+      <div class="auth-links">
+        <a routerLink="/login" class="auth-link">Login</a>
+        <a routerLink="/register" class="auth-btn">Get Started</a>
+      </div>
+    </div>
+
+    <main class="home-content">
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-text">AI-Powered Football Analytics</span>
+          </div>
+          
+          <h1 class="hero-title">
+            <span class="title-line">Data-Driven</span>
+            <span class="title-line highlight">Talent Discovery</span>
+            <span class="title-line">for Modern Football</span>
+          </h1>
+          
+          <p class="hero-subtitle">
+            Transform raw video into actionable insights. Our AI turns each clip into clear numbers—shoulder checks,
+            footwork tempo, touches, and how tight you keep the ball—so scouts and coaches see the same picture.
+          </p>
+          
+          <div class="hero-stats">
+            <div class="hero-stat">
+              <div class="stat-number">6</div>
+              <div class="stat-label">Key Metrics</div>
+            </div>
+            <div class="hero-stat">
+              <div class="stat-number">24/7</div>
+              <div class="stat-label">AI Analysis</div>
+            </div>
+            <div class="hero-stat">
+              <div class="stat-number">500+</div>
+              <div class="stat-label">Active Scouts</div>
+            </div>
+          </div>
+          
+          <div class="hero-cta">
+            <button class="btn btn-primary btn-lg btn-icon" (click)="navigateToDashboard()">
+              <i class="bi bi-play-circle"></i>
+              {{ isAuthenticated ? 'Go to Dashboard' : 'Start Free Analysis' }}
+              <i class="bi bi-arrow-right"></i>
+            </button>
+            
+            <div class="hero-secondary-cta">
+              <button *ngIf="!isAuthenticated" class="btn btn-outline btn-icon" routerLink="/register">
+                <i class="bi bi-person-plus"></i>
+                Create Account
+              </button>
+              <a href="#" class="demo-link">
+                <i class="bi bi-camera-video"></i>
+                See How It Works
+              </a>
+            </div>
+          </div>
+          
+          <div class="trust-badges">
+            <div class="trust-badge">
+              <img src="https://images.unsplash.com/photo-1560272564-c83b66b1ad12?q=80&w=100&auto=format&fit=crop" alt="Premier League club" class="club-logo">
+              <span>Used by Pro Clubs</span>
+            </div>
+            <div class="trust-badge">
+              <i class="bi bi-shield-check"></i>
+              <span>FIFA Approved</span>
+            </div>
+            <div class="trust-badge">
+              <i class="bi bi-star-fill"></i>
+              <span>4.9/5 Rating</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Hero Visual Side -->
+        <div class="hero-visual-side">
+          <div class="analysis-preview">
+            <div class="preview-header">
+              <div class="player-avatar">
+                <img src="https://images.unsplash.com/photo-1599058917212-d750089bc07e?q=80&w=100&auto=format&fit=crop" alt="Player">
+              </div>
+              <div class="player-info">
+                <h4>James Rodriguez</h4>
+                <div class="player-position">Midfielder • Age 22</div>
+              </div>
+              <div class="overall-rating">
+                <div class="rating-value">86</div>
+                <div class="rating-label">OVR</div>
+              </div>
+            </div>
+            
+            <div class="metrics-grid">
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-name">Scanning</span>
+                  <span class="metric-value">92%</span>
+                </div>
+                <div class="metric-bar">
+                  <div class="bar-fill" style="width: 92%"></div>
+                </div>
+              </div>
+              
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-name">Tempo</span>
+                  <span class="metric-value">142</span>
+                </div>
+                <div class="metric-bar">
+                  <div class="bar-fill" style="width: 87%"></div>
+                </div>
+              </div>
+              
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-name">Steps</span>
+                  <span class="metric-value">24</span>
+                </div>
+                <div class="metric-bar">
+                  <div class="bar-fill" style="width: 80%"></div>
+                </div>
+              </div>
+              
+              <div class="metric-card">
+                <div class="metric-header">
+                  <span class="metric-name">Overall score</span>
+                  <span class="metric-value">94</span>
+                </div>
+                <div class="metric-bar">
+                  <div class="bar-fill" style="width: 94%"></div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="scout-verdict">
+              <div class="verdict-badge positive">
+                <i class="bi bi-check-circle"></i>
+                <span>Scout Recommended</span>
+              </div>
+              <div class="verdict-text">
+                "Exceptional technical ability with elite decision-making"
+              </div>
+            </div>
+          </div>
+          
+          <!-- Video Upload Preview -->
+          <div class="upload-preview">
+            <div class="upload-card">
+              <div class="upload-icon">
+                <i class="bi bi-cloud-arrow-up"></i>
+              </div>
+              <h4>Upload Training Video</h4>
+              <p>Get AI analysis in minutes</p>
+              <div class="upload-button">
+                <i class="bi bi-play-btn"></i>
+                Select Video
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="features-section">
+        <div class="section-header">
+          <div class="section-badge">Why Choose TalentEye</div>
+          <h2 class="section-title">Next-Generation Football Analytics</h2>
+          <p class="section-subtitle">Professional-grade tools for players and scouts</p>
+        </div>
+        
+        <div class="features-grid">
+          <div class="feature-card animate-on-scroll">
+            <div class="feature-card-header">
+              <div class="feature-icon">
+                <i class="bi bi-camera-video"></i>
+                <div class="icon-badge">AI</div>
+              </div>
+              <div class="feature-pill feature-pill-primary">For Players</div>
+            </div>
+            <h3 class="feature-title">AI Video Analysis</h3>
+            <p class="feature-description">
+              Upload drill videos and get instant AI-powered analysis of key football metrics.
+              No expensive equipment needed.
+            </p>
+            <ul class="feature-list">
+              <li><i class="bi bi-check-circle"></i> Automatic video processing</li>
+              <li><i class="bi bi-check-circle"></i> Real-time feedback</li>
+              <li><i class="bi bi-check-circle"></i> Progress tracking</li>
+            </ul>
+          </div>
+          
+          <div class="feature-card animate-on-scroll">
+            <div class="feature-card-header">
+              <div class="feature-icon">
+                <i class="bi bi-graph-up"></i>
+              </div>
+              <div class="feature-pill feature-pill-secondary">Objective Data</div>
+            </div>
+            <h3 class="feature-title">Advanced Metrics</h3>
+            <p class="feature-description">
+              Track scanning, tempo (steps per minute), step count,
+              close control, and an overall score from your footage.
+            </p>
+            <div class="metrics-preview">
+              <div class="metric-bar" style="--width: 85%; --color: #10B981;">
+                <span>Scanning</span>
+                <span>85%</span>
+              </div>
+              <div class="metric-bar" style="--width: 72%; --color: #F59E0B;">
+                <span>Tempo</span>
+                <span>138</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="feature-card animate-on-scroll">
+            <div class="feature-card-header">
+              <div class="feature-icon">
+                <i class="bi bi-binoculars"></i>
+              </div>
+              <div class="feature-pill feature-pill-accent">Scouting</div>
+            </div>
+            <h3 class="feature-title">Scout Discovery</h3>
+            <p class="feature-description">
+              Showcase your skills to professional scouts. Get discovered based on data,
+              not just connections or location.
+            </p>
+            <div class="scout-stats">
+              <div class="scout-stat">
+                <div class="stat-value">500+</div>
+                <div class="stat-label">Active Scouts</div>
+              </div>
+              <div class="scout-stat">
+                <div class="stat-value">82</div>
+                <div class="stat-label">Clubs Connected</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="stats-section">
+        <div class="stats-background"></div>
+        <div class="stats-container">
+          <div class="stat-card animate-on-scroll">
+            <div class="stat-number">
+              <span class="counter" id="counter-metrics">0</span>
+              <span class="stat-suffix">Metrics</span>
+            </div>
+            <div class="stat-label">Deep Analysis</div>
+            <p class="stat-description">Comprehensive player evaluation</p>
+          </div>
+          
+          <div class="stat-card animate-on-scroll">
+            <div class="stat-number">
+              <span class="counter" id="counter-processing">0</span>
+              <span class="stat-suffix">/7</span>
+            </div>
+            <div class="stat-label">AI Processing</div>
+            <p class="stat-description">Instant results anytime</p>
+          </div>
+          
+          <div class="stat-card highlight animate-on-scroll">
+            <div class="stat-number">
+              <span class="counter" id="counter-objective">0</span>
+              <span class="stat-suffix">%</span>
+            </div>
+            <div class="stat-label">Objective Analysis</div>
+            <p class="stat-description">Bias-free evaluation</p>
+          </div>
+          
+          <div class="stat-card animate-on-scroll">
+            <div class="stat-number">
+              $<span class="counter" id="counter-cost">0</span>
+            </div>
+            <div class="stat-label">Hardware Cost</div>
+            <p class="stat-description">Start with your phone</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section class="cta-section">
+        <div class="cta-card animate-on-scroll">
+          <div class="cta-content">
+            <h2 class="cta-title">Ready to Transform Your Game?</h2>
+            <p class="cta-subtitle">
+              Join thousands of players and scouts who are already using TalentEye 
+              to discover and develop football talent.
+            </p>
+            <div class="cta-actions">
+              <button class="btn btn-primary btn-lg" (click)="navigateToDashboard()">
+                <i class="bi bi-rocket-takeoff"></i>
+                {{ isAuthenticated ? 'Go to Dashboard' : 'Get Started Free' }}
+              </button>
+              <a href="#" class="demo-link">
+                <i class="bi bi-play-circle"></i>
+                Watch Demo
+              </a>
+            </div>
+            
+            <div class="testimonial">
+              <div class="testimonial-content">
+                <i class="bi bi-quote"></i>
+                <p>"TalentEye helped us identify three players who are now in our academy. 
+                   The AI analysis is incredibly accurate."</p>
+              </div>
+              <div class="testimonial-author">
+                <strong>Marcus Chen</strong>
+                <span>Head Scout, Premier League Club</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="cta-visual">
+            <div class="visual-container">
+              <div class="dashboard-preview"></div>
+              <div class="phone-preview"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <!-- Scroll Progress Indicator -->
+  <div class="scroll-progress"></div>
+</div>

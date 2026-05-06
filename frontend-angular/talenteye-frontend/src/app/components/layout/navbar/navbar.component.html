@@ -1,0 +1,128 @@
+
+<nav class="navbar navbar-expand-lg">
+  <div class="container">
+    <!-- Logo/Brand -->
+    <a class="navbar-brand" [routerLink]="currentUser?.role === 'SCOUT' ? '/scout' : '/dashboard'">
+      <div class="logo-icon">
+        <!-- Updated logo with football analytics symbol -->
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z" 
+                fill="url(#navbar-gradient)"/>
+          <path d="M16 6C10.477 6 6 10.477 6 16C6 21.523 10.477 26 16 26C21.523 26 26 21.523 26 16C26 10.477 21.523 6 16 6Z" 
+                fill="white" fill-opacity="0.9"/>
+          <path d="M16 10C12.686 10 10 12.686 10 16C10 19.314 12.686 22 16 22C19.314 22 22 19.314 22 16C22 12.686 19.314 10 16 10Z" 
+                fill="url(#navbar-gradient)"/>
+          <path d="M16 13C14.343 13 13 14.343 13 16C13 17.657 14.343 19 16 19C17.657 19 19 17.657 19 16C19 14.343 17.657 13 16 13Z" 
+                fill="white"/>
+          <!-- Crosshair lines -->
+          <path d="M16 6L16 26" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M6 16L26 16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- Diagonal lines -->
+          <path d="M10 10L22 22" stroke="white" stroke-width="1" stroke-linecap="round" stroke-opacity="0.7"/>
+          <path d="M22 10L10 22" stroke="white" stroke-width="1" stroke-linecap="round" stroke-opacity="0.7"/>
+          <defs>
+            <linearGradient id="navbar-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#006400"/>
+              <stop offset="100%" stop-color="#10B981"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="logo-text">Talent<span class="logo-accent">Eye</span></span>
+    </a>
+
+    <!-- Mobile Toggle Button -->
+    <button class="navbar-toggler" type="button" (click)="toggleNavbar()">
+      <span class="navbar-toggler-icon">
+        <i class="bi bi-list" style="font-size: 1.5rem; color: white;"></i>
+      </span>
+    </button>
+
+    <!-- Navbar Items -->
+    <div class="collapse navbar-collapse" [class.show]="!isNavbarCollapsed">
+      <!-- Left Side - Navigation Links -->
+      <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+        <li class="nav-item" *ngIf="currentUser?.role === 'PLAYER'">
+          <a class="nav-link" routerLink="/dashboard" routerLinkActive="active">
+            <i class="bi bi-speedometer2 me-1"></i> Dashboard
+          </a>
+        </li>
+
+        <ng-container *ngIf="currentUser?.role === 'SCOUT'">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/scout" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+              <i class="bi bi-speedometer2 me-1"></i> Home
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/scout/players" routerLinkActive="active">
+              <i class="bi bi-people me-1"></i> Players
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/scout/shortlist" routerLinkActive="active">
+              <i class="bi bi-star me-1"></i> Shortlist
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/scout/compare" routerLinkActive="active">
+              <i class="bi bi-bar-chart-steps me-1"></i> Compare
+            </a>
+          </li>
+        </ng-container>
+        
+        <ng-container *ngIf="currentUser?.role === 'PLAYER'">
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/upload" routerLinkActive="active">
+              <i class="bi bi-cloud-upload me-1"></i> Upload Video
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/videos" routerLinkActive="active">
+              <i class="bi bi-collection-play me-1"></i> My Videos
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/metrics" routerLinkActive="active">
+              <i class="bi bi-graph-up me-1"></i> My Metrics
+            </a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" routerLink="/profile" routerLinkActive="active">
+              <i class="bi bi-person-circle me-1"></i> Profile
+            </a>
+          </li>
+        </ng-container>
+
+      </ul>
+
+      <!-- Right Side - User Info -->
+      <div class="d-flex align-items-center">
+        <div *ngIf="currentUser" class="dropdown">
+          <button class="btn user-dropdown dropdown-toggle d-flex align-items-center" 
+                  type="button" id="userDropdown" data-bs-toggle="dropdown">
+            <div class="user-avatar">
+              {{ (currentUser.first_name && currentUser.first_name.charAt(0)) || currentUser.username.charAt(0) }}
+            </div>
+            <span class="d-none d-md-inline">
+              {{ currentUser.first_name || currentUser.username }}
+            </span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+            <li *ngIf="currentUser.role === 'PLAYER'">
+              <a class="dropdown-item" routerLink="/profile">
+                <i class="bi bi-person me-2"></i> My Profile
+              </a>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <a class="dropdown-item text-danger" (click)="logout()" style="cursor: pointer;">
+                <i class="bi bi-box-arrow-right me-2"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</nav>

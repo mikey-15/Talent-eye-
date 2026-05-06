@@ -1,0 +1,241 @@
+/* Metrics dashboard polish: stronger hierarchy and card UI */
+
+.video-list-container {
+  padding: 2rem 0 2.5rem;
+  min-height: calc(100vh - 140px);
+  background:
+    radial-gradient(circle at 5% 0%, rgba(59, 130, 246, 0.08), transparent 40%),
+    radial-gradient(circle at 95% 10%, rgba(99, 102, 241, 0.08), transparent 38%),
+    linear-gradient(180deg, #f8faff 0%, #f3f6fb 100%);
+}
+
+.video-list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding: 1.25rem 1.5rem;
+  border-radius: 16px;
+  background: linear-gradient(125deg, #111c68 0%, #1e2f93 48%, #3048b7 100%);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 14px 30px rgba(17, 28, 104, 0.2);
+}
+
+.video-list-title {
+  font-size: 1.85rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0 0 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.video-list-header .text-muted {
+  color: rgba(241, 245, 249, 0.9) !important;
+  max-width: 70ch;
+}
+
+.section-heading {
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #111827;
+  margin: 0 0 1rem;
+}
+
+.filters-section {
+  background: rgba(255, 255, 255, 0.94);
+  padding: 1.3rem 1.4rem;
+  border-radius: 14px;
+  box-shadow: 0 10px 25px rgba(15, 23, 42, 0.08);
+  border: 1px solid rgba(148, 163, 184, 0.2);
+  margin-bottom: 1.25rem;
+  backdrop-filter: blur(5px);
+}
+
+.filter-label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 600;
+  color: #334155;
+}
+
+.filter-control {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  border: 1px solid #d4dbea;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  background-color: #fff;
+}
+
+.filter-control:focus {
+  border-color: #3351d6;
+  box-shadow: 0 0 0 0.2rem rgba(51, 81, 214, 0.18);
+  outline: none;
+}
+
+.overall-tiles {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 0.85rem;
+}
+
+.overall-tile {
+  background: linear-gradient(135deg, #f8faff 0%, #eef3ff 100%);
+  border: 1px solid #dfe7ff;
+  border-radius: 12px;
+  padding: 0.85rem 1rem;
+  box-shadow: 0 6px 14px rgba(37, 99, 235, 0.08);
+}
+
+.tile-lbl {
+  display: block;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #64748b;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.tile-val {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e3a8a;
+}
+
+.video-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+  padding: 0 0.15rem;
+}
+
+.kpi-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+  margin-bottom: 1.25rem;
+}
+
+.kpi-chip {
+  background: #ffffff;
+  border: 1px solid #dde4ef;
+  border-radius: 999px;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.82rem;
+  color: #334155;
+  box-shadow: 0 2px 7px rgba(15, 23, 42, 0.06);
+}
+
+.kpi-chip b {
+  color: #1d4ed8;
+  margin-left: 0.25rem;
+}
+
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1.4fr 1fr;
+  gap: 1.25rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 991px) {
+  .charts-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.chart-box {
+  margin-bottom: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.chart-box:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 28px rgba(15, 23, 42, 0.1);
+}
+
+.chart-heading {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #1a237e;
+  margin: 0 0 1rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #e2e8f0;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.chart-area {
+  height: 300px;
+  position: relative;
+}
+
+.chart-area-bar {
+  height: 280px;
+}
+
+.action-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem;
+}
+
+.action-buttons .btn {
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.coaching-feedback-section {
+  margin-top: 1.25rem;
+}
+
+.coaching-video {
+  max-height: 420px;
+  background: #0f172a;
+}
+
+.action-tips-list {
+  padding-left: 1.15rem;
+  margin: 0;
+}
+
+.action-tips-list li {
+  margin-bottom: 0.5rem;
+}
+
+@media (max-width: 768px) {
+  .video-list-container {
+    padding-top: 1.25rem;
+  }
+
+  .video-list-header {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 1rem;
+  }
+
+  .video-list-title {
+    font-size: 1.45rem;
+  }
+
+  .filters-section {
+    padding: 1rem;
+  }
+
+  .chart-area {
+    height: 260px;
+  }
+
+  .chart-area-bar {
+    height: 240px;
+  }
+}

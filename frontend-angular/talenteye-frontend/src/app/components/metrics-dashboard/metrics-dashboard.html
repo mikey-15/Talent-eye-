@@ -1,0 +1,160 @@
+<div class="video-list-container">
+  <div class="container">
+    <div class="video-list-header">
+      <div>
+        <h1 class="video-list-title">
+          <i class="bi bi-graph-up"></i>
+          My metrics
+        </h1>
+        <p class="text-muted mb-0 small">
+          Numbers from each finished clip—shown in plain football language. Close control and mobility are scored 0–100 so you can compare sessions without camera jargon.
+        </p>
+      </div>
+      <a routerLink="/dashboard" class="btn btn-outline-secondary">
+        <i class="bi bi-arrow-left"></i> Dashboard
+      </a>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center py-5">
+      <app-loading-spinner [fullScreen]="false" message="Loading metrics…"></app-loading-spinner>
+    </div>
+
+    <ng-container *ngIf="!isLoading">
+      <section *ngIf="overall.videoCount > 0" class="filters-section">
+        <h2 class="section-heading">Overall averages ({{ overall.videoCount }} videos)</h2>
+        <div class="overall-tiles">
+          <div class="overall-tile" *ngIf="overall.totalStepsAvg !== null">
+            <span class="tile-lbl">Steps (avg)</span>
+            <span class="tile-val">{{ overall.totalStepsAvg }}</span>
+          </div>
+          <div class="overall-tile" *ngIf="overall.cadenceSpmAvg !== null">
+            <span class="tile-lbl">Tempo (avg)</span>
+            <span class="tile-val">{{ overall.cadenceSpmAvg | number:'1.0-1' }} steps/min</span>
+          </div>
+          <div class="overall-tile" *ngIf="overall.totalScansAvg !== null">
+            <span class="tile-lbl">Scanning (avg)</span>
+            <span class="tile-val">{{ overall.totalScansAvg }}</span>
+          </div>
+          <div class="overall-tile" *ngIf="overall.avgTouchTightnessAvg !== null">
+            <span class="tile-lbl">Close control (avg)</span>
+            <span class="tile-val">{{ closeControlOverallPercent() | number:'1.0-0' }}%</span>
+          </div>
+        </div>
+      </section>
+
+      <section *ngIf="videos.length > 0" class="filters-section">
+        <label class="filter-label" for="videoPick">Select video</label>
+        <select
+          id="videoPick"
+          class="filter-control"
+          [(ngModel)]="selectedVideoId"
+          (ngModelChange)="onVideoSelect($event)"
+        >
+          <option *ngFor="let video of videos" [ngValue]="video.id">
+            #{{ video.id }} — {{ video.uploaded_at | date:'medium' }}
+          </option>
+        </select>
+      </section>
+
+      <section *ngIf="videos.length === 0" class="filters-section text-center py-5">
+        <i class="bi bi-graph-up-arrow display-4 text-muted"></i>
+        <h2 class="h4 mt-3">No analyzed videos</h2>
+        <p class="text-muted">Upload a drill and wait until processing completes.</p>
+        <a routerLink="/upload" class="btn btn-primary">Upload video</a>
+      </section>
+
+      <ng-container *ngIf="videos.length > 0 && hasMetricsData">
+        <div class="video-meta-row" *ngIf="selectedVideo as video">
+          <div>
+            <strong>Video #{{ video.id }}</strong>
+            <span class="text-muted ms-2">{{ video.uploaded_at | date:'medium' }}</span>
+          </div>
+          <a *ngIf="resultDocUrl() as docUrl" class="btn btn-sm btn-outline-primary" [href]="docUrl" target="_blank" rel="noopener noreferrer">
+            <i class="bi bi-filetype-json"></i> Result JSON
+          </a>
+        </div>
+
+        <div class="kpi-row">
+          <span class="kpi-chip" *ngIf="closeControlScorePercent() !== null">Close control <b>{{ closeControlScorePercent() | number:'1.0-0' }}%</b></span>
+          <span class="kpi-chip" *ngIf="kpi.totalSteps !== null">Steps <b>{{ kpi.totalSteps }}</b></span>
+          <span class="kpi-chip" *ngIf="kpi.cadenceSpm !== null">Quick feet <b>{{ kpi.cadenceSpm | number:'1.0-1' }} / min</b></span>
+          <span class="kpi-chip" *ngIf="kpi.totalScans !== null">Scanning <b>{{ kpi.totalScans }}</b></span>
+          <span class="kpi-chip" *ngIf="driveScorePercent() !== null">Mobility <b>{{ driveScorePercent() | number:'1.0-0' }}%</b></span>
+        </div>
+
+        <section class="filters-section coaching-feedback-section" *ngIf="selectedVideo as sv">
+          <h3 class="chart-heading"><i class="bi bi-play-circle"></i> Coaching clip &amp; feedback</h3>
+          <p class="text-muted small">
+            This is your analyzed video with overlays (ball trace, steps, scans). Use it alongside the numbers to see exactly what to repeat or fix.
+          </p>
+          <div class="row g-3 align-items-start">
+            <div class="col-lg-7">
+              <ng-container *ngIf="annotatedCoachingVideoUrl() as coachUrl; else noCoachClip">
+                <video
+                  class="w-100 rounded shadow-sm coaching-video"
+                  [src]="coachUrl"
+                  controls
+                  playsinline
+                  preload="metadata"
+                ></video>
+              </ng-container>
+              <ng-template #noCoachClip>
+                <div class="alert alert-secondary mb-0">
+                  No coaching clip is stored for this run yet. Open <strong>My videos</strong> after your next upload, or re-process if the pipeline skipped the overlay file.
+                </div>
+              </ng-template>
+            </div>
+            <div class="col-lg-5">
+              <h4 class="h6 fw-semibold">Actionable focus</h4>
+              <ul class="action-tips-list small mb-0">
+                <li *ngFor="let tip of actionTips()">{{ tip }}</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <div class="charts-grid">
+          <div class="filters-section chart-box">
+            <h3 class="chart-heading"><i class="bi bi-activity"></i> Close control through the clip</h3>
+            <div *ngIf="touchHistoryIsSynthetic" class="alert alert-success py-2 small mb-3">
+              No moment-by-moment samples in this file—showing a flat line at your usual close-control score of
+              <strong>{{ closeControlScorePercent() | number:'1.0-0' }}%</strong>.
+            </div>
+            <div class="chart-area" *ngIf="hasTouchHistory; else noHist">
+              <canvas baseChart [data]="touchChartData" [options]="touchChartOptions" [type]="'line'"></canvas>
+            </div>
+            <ng-template #noHist>
+              <p class="text-muted small mb-0">Nothing to plot. Inspect the JSON for this video.</p>
+            </ng-template>
+          </div>
+          <div class="filters-section chart-box">
+            <h3 class="chart-heading"><i class="bi bi-bar-chart"></i> Steps, scanning &amp; tempo</h3>
+            <div class="chart-area chart-area-bar">
+              <canvas baseChart [data]="barChartData" [options]="barChartOptions" [type]="'bar'"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <section class="filters-section">
+          <h3 class="chart-heading">Export &amp; share</h3>
+          <div class="action-buttons">
+            <button type="button" class="btn btn-primary" (click)="downloadReport()">
+              <i class="bi bi-download"></i> Download report (HTML)
+            </button>
+            <button type="button" class="btn btn-outline-primary" (click)="shareMetrics()">
+              <i class="bi bi-share"></i> Share page
+            </button>
+            <a routerLink="/upload" class="btn btn-outline-secondary">
+              <i class="bi bi-cloud-plus"></i> New upload
+            </a>
+          </div>
+          <p class="text-muted small mt-2 mb-0">Open the downloaded HTML and use Print → Save as PDF for a PDF.</p>
+        </section>
+      </ng-container>
+
+      <section *ngIf="videos.length > 0 && !hasMetricsData" class="filters-section text-center py-4">
+        <p class="text-muted mb-0">No KPIs yet for this selection. If processing just finished, refresh the page.</p>
+      </section>
+    </ng-container>
+  </div>
+</div>

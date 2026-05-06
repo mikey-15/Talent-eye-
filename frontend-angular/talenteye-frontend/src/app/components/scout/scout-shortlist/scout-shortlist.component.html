@@ -1,0 +1,69 @@
+<div class="shortlist-page">
+  <div class="container py-4">
+    <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-4">
+      <div>
+        <button type="button" class="btn btn-outline-secondary btn-sm mb-2" (click)="router.navigate(['/scout'])">
+          <i class="bi bi-arrow-left"></i> Scout home
+        </button>
+        <h1 class="h4 mb-0">Shortlisted players</h1>
+        <p class="text-muted small mb-0">Players you saved from the directory.</p>
+      </div>
+      <button type="button" class="btn btn-outline-primary btn-sm" (click)="load()">
+        <i class="bi bi-arrow-clockwise"></i> Refresh
+      </button>
+    </div>
+
+    <div *ngIf="isLoading" class="text-center py-5">
+      <app-loading-spinner [fullScreen]="false" message="Loading shortlist…"></app-loading-spinner>
+    </div>
+
+    <div *ngIf="!isLoading && entries.length === 0" class="empty-box text-center py-5">
+      <i class="bi bi-star display-4 text-muted"></i>
+      <p class="mt-3 mb-2">No players on your shortlist yet.</p>
+      <button type="button" class="btn btn-primary" (click)="router.navigate(['/scout/players'])">
+        Browse players
+      </button>
+    </div>
+
+    <div *ngIf="!isLoading && entries.length > 0" class="table-responsive card shadow-sm">
+      <table class="table table-hover align-middle mb-0">
+        <thead class="table-light">
+          <tr>
+            <th>Player</th>
+            <th>Position</th>
+            <th>Age</th>
+            <th>Videos</th>
+            <th>Performance</th>
+            <th>Updated</th>
+            <th class="text-end">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let e of entries" class="shortlist-row" (click)="openPlayer(e.player.id)">
+            <td>
+              <div class="d-flex align-items-center gap-2">
+                <img [src]="avatarUrl(e)" alt="" class="rounded-circle list-avatar" width="40" height="40" />
+                <div>
+                  <div class="fw-semibold">{{ e.player.username }}</div>
+                  <div class="small text-muted text-truncate" style="max-width: 12rem">{{ e.player.location || '—' }}</div>
+                </div>
+              </div>
+            </td>
+            <td>{{ e.player.preferred_position || '—' }}</td>
+            <td>{{ age(e.player.date_of_birth) }}</td>
+            <td>{{ e.player.completed_videos_count ?? 0 }}</td>
+            <td>
+              <span *ngIf="e.player.overall_rating != null">{{ e.player.overall_rating | number:'1.0-1' }}</span>
+              <span *ngIf="e.player.overall_rating == null" class="text-muted">—</span>
+            </td>
+            <td class="small text-muted">{{ e.updated_at | date:'mediumDate' }}</td>
+            <td class="text-end" (click)="$event.stopPropagation()">
+              <button type="button" class="btn btn-sm btn-outline-primary me-1" (click)="openPlayer(e.player.id)">Profile</button>
+              <button type="button" class="btn btn-sm btn-outline-danger" (click)="remove(e, $event)">Remove</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

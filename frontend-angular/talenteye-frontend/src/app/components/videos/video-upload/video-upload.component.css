@@ -1,0 +1,359 @@
+
+.upload-container {
+  padding: 2rem 0;
+  min-height: calc(100vh - 140px);
+}
+
+.upload-card {
+  background: white;
+  border-radius: 16px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  position: relative;
+}
+
+.upload-card-busy .upload-body {
+  pointer-events: none;
+  user-select: none;
+}
+
+.form-section-locked {
+  pointer-events: none;
+  opacity: 0.92;
+}
+
+.upload-processing-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.upload-processing-panel {
+  text-align: center;
+  max-width: 420px;
+}
+
+.upload-processing-heading {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: #1a237e;
+  margin: 1rem 0 0.5rem;
+}
+
+.upload-processing-detail {
+  font-size: 1.05rem;
+  color: #333;
+  margin-bottom: 0.75rem;
+}
+
+.upload-processing-badge {
+  display: inline-block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  background: rgba(26, 35, 126, 0.12);
+  color: #1a237e;
+}
+
+.upload-processing-hint {
+  font-size: 0.875rem;
+  margin-top: 1.25rem;
+  margin-bottom: 0;
+  line-height: 1.45;
+}
+
+.processing-result {
+  display: flex;
+  gap: 1.25rem;
+  align-items: flex-start;
+  margin-top: 2rem;
+  padding: 1.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(25, 135, 84, 0.35);
+  background: rgba(25, 135, 84, 0.06);
+}
+
+.processing-result-error {
+  border-color: rgba(220, 53, 69, 0.4);
+  background: rgba(220, 53, 69, 0.06);
+}
+
+.processing-result-icon {
+  font-size: 2rem;
+  line-height: 1;
+  color: #198754;
+}
+
+.processing-result-error .processing-result-icon {
+  color: #dc3545;
+}
+
+.processing-result-title {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0 0 0.35rem;
+  color: #1a237e;
+}
+
+.processing-result-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+@media (max-width: 576px) {
+  .processing-result {
+    flex-direction: column;
+  }
+  .processing-result-actions {
+    flex-direction: column;
+  }
+  .processing-result-actions .btn {
+    width: 100%;
+  }
+}
+
+.upload-header {
+  background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+  color: white;
+  padding: 2rem;
+  text-align: center;
+}
+
+.upload-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.upload-subtitle {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  margin: 0;
+}
+
+.upload-body {
+  padding: 2rem;
+}
+
+.upload-form {
+  display: grid;
+  gap: 2rem;
+}
+
+.form-section {
+  padding: 1.5rem;
+  border: 2px dashed #e0e0e0;
+  border-radius: 12px;
+  background-color: #f8f9fa;
+  transition: all 0.3s ease;
+}
+
+.form-section.drag-over {
+  border-color: #1a237e;
+  background-color: rgba(26, 35, 126, 0.05);
+}
+
+.form-label {
+  display: block;
+  margin-bottom: 0.75rem;
+  font-weight: 600;
+  color: #333;
+  font-size: 1.1rem;
+}
+
+.form-label .required {
+  color: #dc3545;
+}
+
+.form-control, .form-select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+  border-color: #1a237e;
+  box-shadow: 0 0 0 0.2rem rgba(26, 35, 126, 0.25);
+  outline: none;
+}
+
+.form-control.is-invalid, .form-select.is-invalid {
+  border-color: #dc3545;
+}
+
+.invalid-feedback {
+  color: #dc3545;
+  font-size: 0.875rem;
+  margin-top: 0.25rem;
+}
+
+.file-upload-area {
+  text-align: center;
+  padding: 3rem 2rem;
+  cursor: pointer;
+}
+
+.upload-icon {
+  font-size: 3rem;
+  color: #1a237e;
+  margin-bottom: 1rem;
+}
+
+.upload-instructions {
+  color: #666;
+  margin-bottom: 1.5rem;
+}
+
+.upload-buttons {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+}
+
+.btn-upload {
+  padding: 10px 24px;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-upload:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.video-preview {
+  margin-top: 2rem;
+}
+
+.preview-container {
+  border-radius: 12px;
+  overflow: hidden;
+  background-color: #000;
+  position: relative;
+}
+
+.video-element {
+  width: 100%;
+  max-height: 400px;
+  display: block;
+}
+
+.preview-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  color: white;
+  gap: 1rem;
+}
+
+.preview-actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.upload-progress {
+  margin-top: 2rem;
+}
+
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.progress-bar {
+  height: 10px;
+  border-radius: 5px;
+  background-color: #e0e0e0;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(135deg, #1a237e 0%, #283593 100%);
+  transition: width 0.3s ease;
+  border-radius: 5px;
+}
+
+.submit-section {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #e0e0e0;
+}
+
+.btn-submit {
+  padding: 12px 32px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.drill-info {
+  background-color: #f8f9fa;
+  padding: 1rem;
+  border-radius: 8px;
+  margin-top: 1rem;
+  border-left: 4px solid #1a237e;
+}
+
+.drill-info h6 {
+  color: #1a237e;
+  margin-bottom: 0.5rem;
+}
+
+.drill-info p {
+  color: #666;
+  margin-bottom: 0.5rem;
+  font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+  .upload-buttons {
+    flex-direction: column;
+  }
+  
+  .submit-section {
+    flex-direction: column;
+  }
+  
+  .btn-submit {
+    width: 100%;
+  }
+}

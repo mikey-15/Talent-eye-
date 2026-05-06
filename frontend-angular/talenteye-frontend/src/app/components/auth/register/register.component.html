@@ -1,0 +1,231 @@
+<!-- src/app/components/auth/register/register.component.html -->
+<div class="register-container">
+  <!-- Header -->
+  <header class="register-header">
+    <a routerLink="/" class="logo">
+      <div class="logo-icon">
+        <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M16 2C8.268 2 2 8.268 2 16C2 23.732 8.268 30 16 30C23.732 30 30 23.732 30 16C30 8.268 23.732 2 16 2Z"
+                fill="url(#gradient)"/>
+          <path d="M16 6C10.477 6 6 10.477 6 16C6 21.523 10.477 26 16 26C21.523 26 26 21.523 26 16C26 10.477 21.523 6 16 6Z"
+                fill="white" fill-opacity="0.9"/>
+          <path d="M16 10C12.686 10 10 12.686 10 16C10 19.314 12.686 22 16 22C19.314 22 22 19.314 22 16C22 12.686 19.314 10 16 10Z"
+                fill="url(#gradient)"/>
+          <path d="M16 13C14.343 13 13 14.343 13 16C13 17.657 14.343 19 16 19C17.657 19 19 17.657 19 16C19 14.343 17.657 13 16 13Z"
+                fill="white"/>
+          <!-- Crosshair lines -->
+          <path d="M16 6L16 26" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <path d="M6 16L26 16" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+          <!-- Diagonal lines -->
+          <path d="M10 10L22 22" stroke="white" stroke-width="1" stroke-linecap="round" stroke-opacity="0.7"/>
+          <path d="M22 10L10 22" stroke="white" stroke-width="1" stroke-linecap="round" stroke-opacity="0.7"/>
+          <defs>
+            <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#006400"/>
+              <stop offset="100%" stop-color="#10B981"/>
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <span class="logo-text">Talent<span class="logo-accent">Eye</span></span>
+    </a>
+
+    <nav class="register-nav">
+      <a routerLink="/login" class="nav-link">
+        <i class="bi bi-box-arrow-in-right"></i>
+        Sign In
+      </a>
+      <a routerLink="/" class="home-link">
+        <i class="bi bi-house"></i>
+        Home
+      </a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main class="register-main">
+    <div class="register-card">
+      <!-- Error Message -->
+      <div *ngIf="errorMessage" class="error-alert">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        {{ errorMessage }}
+      </div>
+
+      <div class="card-header">
+        <h1 class="card-title">Create Account</h1>
+        <p class="card-subtitle">Join TalentEye to showcase your talent</p>
+      </div>
+
+      <!-- Registration Form -->
+      <form [formGroup]="registerForm" (ngSubmit)="onSubmit()" class="register-form">
+        <!-- Name Row -->
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName" class="form-label">First Name</label>
+            <input
+              type="text"
+              id="firstName"
+              formControlName="firstName"
+              class="form-control"
+              placeholder="Enter your first name"
+              [class.error]="firstName?.invalid && firstName?.touched"
+            />
+            <div *ngIf="firstName?.invalid && firstName?.touched" class="invalid-feedback">
+              <div *ngIf="firstName?.errors?.['required']">First name is required</div>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label for="lastName" class="form-label">Last Name</label>
+            <input
+              type="text"
+              id="lastName"
+              formControlName="lastName"
+              class="form-control"
+              placeholder="Enter your last name"
+              [class.error]="lastName?.invalid && lastName?.touched"
+            />
+            <div *ngIf="lastName?.invalid && lastName?.touched" class="invalid-feedback">
+              <div *ngIf="lastName?.errors?.['required']">Last name is required</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Username -->
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <input
+            type="text"
+            id="username"
+            formControlName="username"
+            class="form-control"
+            placeholder="Choose a username"
+            [class.error]="username?.invalid && username?.touched"
+          />
+          <div *ngIf="username?.invalid && username?.touched" class="invalid-feedback">
+            <div *ngIf="username?.errors?.['required']">Username is required</div>
+            <div *ngIf="username?.errors?.['minlength']">
+              Username must be at least 3 characters
+            </div>
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div class="form-group">
+          <label for="email" class="form-label">Email Address</label>
+          <input
+            type="email"
+            id="email"
+            formControlName="email"
+            class="form-control"
+            placeholder="Enter your email"
+            [class.error]="email?.invalid && email?.touched"
+          />
+          <div *ngIf="email?.invalid && email?.touched" class="invalid-feedback">
+            <div *ngIf="email?.errors?.['required']">Email is required</div>
+            <div *ngIf="email?.errors?.['email']">Please enter a valid email</div>
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="form-group">
+          <label for="password" class="form-label">Password</label>
+          <div class="password-input">
+            <input
+              [type]="passwordVisible ? 'text' : 'password'"
+              id="password"
+              formControlName="password"
+              class="form-control"
+              placeholder="Create a password"
+              [class.error]="password?.invalid && password?.touched"
+            />
+            <button type="button" class="password-toggle" (click)="togglePasswordVisibility()">
+              <i [class]="passwordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
+          <div *ngIf="password?.invalid && password?.touched" class="invalid-feedback">
+            <div *ngIf="password?.errors?.['required']">Password is required</div>
+            <div *ngIf="password?.errors?.['minlength']">
+              Password must be at least 6 characters
+            </div>
+          </div>
+        </div>
+
+        <!-- Confirm Password -->
+        <div class="form-group">
+          <label for="confirmPassword" class="form-label">Confirm Password</label>
+          <div class="password-input">
+            <input
+              [type]="confirmPasswordVisible ? 'text' : 'password'"
+              id="confirmPassword"
+              formControlName="confirmPassword"
+              class="form-control"
+              placeholder="Confirm your password"
+              [class.error]="confirmPassword?.invalid && confirmPassword?.touched"
+            />
+            <button type="button" class="password-toggle" (click)="toggleConfirmPasswordVisibility()">
+              <i [class]="confirmPasswordVisible ? 'bi bi-eye-slash' : 'bi bi-eye'"></i>
+            </button>
+          </div>
+          <div *ngIf="confirmPassword?.invalid && confirmPassword?.touched" class="invalid-feedback">
+            <div *ngIf="confirmPassword?.errors?.['required']">Please confirm your password</div>
+          </div>
+          <div *ngIf="registerForm.errors?.['passwordMismatch'] && confirmPassword?.touched"
+               class="invalid-feedback">
+            Passwords do not match
+          </div>
+        </div>
+
+        <!-- Role Selection -->
+        <div class="form-group">
+          <label class="form-label">I want to join as a:</label>
+          <div class="role-options">
+            <div *ngFor="let roleOption of roles"
+                 class="role-option"
+                 [class.selected]="role?.value === roleOption.value"
+                 (click)="role?.setValue(roleOption.value)">
+              <i [class]="roleOption.icon + ' role-icon'"></i>
+              <span class="role-label">{{ roleOption.label }}</span>
+            </div>
+          </div>
+          <input type="hidden" formControlName="role">
+          <div *ngIf="role?.invalid && role?.touched" class="invalid-feedback">
+            Please select a role
+          </div>
+        </div>
+
+        <!-- Terms Agreement -->
+        <div class="terms-check">
+          <input type="checkbox" id="acceptTerms" formControlName="acceptTerms">
+          <label for="acceptTerms" class="terms-label">
+            I agree to the
+            <a href="#" class="terms-link">Terms of Service</a> and
+            <a href="#" class="terms-link">Privacy Policy</a>
+          </label>
+        </div>
+        <div *ngIf="acceptTerms?.invalid && acceptTerms?.touched" class="invalid-feedback">
+          You must accept the terms and conditions
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit" class="btn-register" [disabled]="isLoading || registerForm.invalid">
+          <span class="btn-content">
+            <span *ngIf="!isLoading">Create Account</span>
+            <span *ngIf="isLoading" class="loading">
+              <i class="bi bi-arrow-repeat spin"></i>
+              Creating Account...
+            </span>
+          </span>
+        </button>
+      </form>
+
+      <!-- Footer Links -->
+      <div class="register-footer">
+        <p>
+          Already have an account?
+          <a routerLink="/login" class="register-link">Sign In</a>
+        </p>
+      </div>
+    </div>
+  </main>
+</div>

@@ -1,0 +1,252 @@
+
+<div class="video-list-container">
+  <div class="container">
+    <!-- Header -->
+    <div class="video-list-header">
+      <h1 class="video-list-title">
+        <i class="bi bi-collection-play"></i>
+        My Videos
+      </h1>
+      <div class="video-list-actions">
+        <a routerLink="/upload" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Upload New
+        </a>
+        <a routerLink="/dashboard" class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-left"></i> Back to Dashboard
+        </a>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="filter-row">
+        <div class="filter-group search-input">
+          <label class="filter-label">Search Videos</label>
+          <div class="position-relative">
+            <i class="bi bi-search search-icon"></i>
+            <input
+              type="text"
+              class="filter-control"
+              placeholder="Search by drill or status..."
+              [(ngModel)]="searchTerm"
+              (ngModelChange)="onSearchChange()"
+            />
+          </div>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">Status</label>
+          <select
+            class="filter-control"
+            [(ngModel)]="statusFilter"
+            (ngModelChange)="onFilterChange()"
+          >
+            <option *ngFor="let option of statusOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label class="filter-label">Sort By</label>
+          <select
+            class="filter-control"
+            [(ngModel)]="sortBy"
+            (ngModelChange)="onSortChange()"
+          >
+            <option *ngFor="let option of sortOptions" [value]="option.value">
+              {{ option.label }}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div *ngIf="isLoading" class="loading-state">
+      <app-loading-spinner [fullScreen]="false" message="Loading your videos..."></app-loading-spinner>
+    </div>
+
+    <!-- Videos Grid -->
+    <div *ngIf="!isLoading" class="videos-grid">
+      <!-- Video Cards -->
+      <div *ngFor="let video of filteredVideos" class="video-card fade-in">
+        <div class="video-thumbnail" [class.has-thumb]="!!video.thumbnail_url">
+          <img *ngIf="video.thumbnail_url" class="thumbnail-image" [src]="thumbnailSrc(video)" alt="Video thumbnail">
+          <div class="thumbnail-overlay">
+            <button class="play-button" (click)="openPlayer(video)" [disabled]="!getPlayableUrl(video)">
+              <i class="bi bi-play-fill"></i>
+            </button>
+          </div>
+        </div>
+        
+        <div class="video-card-body">
+          <div class="video-card-header">
+            <div>
+              <h3 class="video-card-title">Video #{{ video.id }}</h3>
+              <div class="video-card-meta">
+                <span class="video-drill" *ngIf="video.drill">Drill #{{ video.drill }}</span>
+                <span class="video-date">
+                  <i class="bi bi-calendar me-1"></i>
+                  {{ formatDate(video.uploaded_at) }}
+                </span>
+              </div>
+            </div>
+            <div class="video-header-actions">
+              <a
+                *ngIf="annotatedMp4Href(video) as annHref"
+                class="pill-link pill-link-annotated"
+                [href]="annHref"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <i class="bi bi-magic me-1"></i>
+                Annotated MP4
+              </a>
+              <div class="video-status">
+                <i [class]="getStatusIcon(video.status)" 
+                   [style.color]="getStatusColor(video.status)"></i>
+                <span [class]="getStatusBadgeClass(video.status)">
+                  {{ video.status }}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          <div class="video-status-detail" *ngIf="video.status !== 'COMPLETED' && !video.error_message">
+            <span class="text-muted small">
+              Processing starts automatically after upload. We refresh every few seconds.
+            </span>
+          </div>
+          <div class="video-status-detail text-danger" *ngIf="video.error_message">
+            <i class="bi bi-exclamation-triangle-fill me-1"></i>
+            {{ video.error_message }}
+          </div>
+
+          <ng-container *ngIf="getMetricSnapshot(video) as metrics">
+            <div class="metric-chips">
+              <div class="metric-chip" *ngIf="metrics.totalSteps !== null">
+                <span class="metric-label">Steps</span>
+                <span class="metric-value">{{ metrics.totalSteps }}</span>
+              </div>
+              <div class="metric-chip" *ngIf="metrics.cadenceSpm !== null">
+                <span class="metric-label">Tempo</span>
+                <span class="metric-value">{{ metrics.cadenceSpm | number:'1.0-1' }} steps/min</span>
+              </div>
+              <div class="metric-chip" *ngIf="metrics.movementSpeedPxS !== null">
+                <span class="metric-label">Movement speed</span>
+                <span class="metric-value">{{ metrics.movementSpeedPxS | number:'1.0-1' }} px/s</span>
+              </div>
+              <div class="metric-chip" *ngIf="metrics.scansDetected !== null">
+                <span class="metric-label">Scanning</span>
+                <span class="metric-value">{{ metrics.scansDetected }}</span>
+              </div>
+              <div class="metric-chip" *ngIf="metrics.avgTouchTightness !== null">
+                <span class="metric-label">Ball-to-foot spacing</span>
+                <span class="metric-value">{{ metrics.avgTouchTightness | number:'1.0-1' }} px</span>
+              </div>
+            </div>
+          </ng-container>
+
+          <div *ngIf="video.status === 'COMPLETED' && !getMetricSnapshot(video)" class="text-muted small mt-2">
+            Metrics will appear once processing payload arrives.
+          </div>
+
+          <div class="video-actions">
+            <button 
+              class="btn btn-action btn-action-primary"
+              (click)="viewMetrics(video.id)"
+              [disabled]="video.status !== 'COMPLETED'"
+            >
+              <i class="bi bi-graph-up"></i> View Metrics
+            </button>
+
+            <button
+              *ngIf="video.status === 'FAILED' || video.status === 'PENDING'"
+              type="button"
+              class="btn btn-action btn-action-secondary"
+              (click)="retryProcessing(video.id)"
+            >
+              <i class="bi bi-arrow-repeat"></i> Retry processing
+            </button>
+
+            <button
+              class="btn btn-action btn-action-secondary"
+              (click)="openPlayer(video)"
+              [disabled]="!getPlayableUrl(video)"
+            >
+              <i class="bi bi-play-circle"></i> Play
+            </button>
+
+            <button
+              *ngIf="(video.result_json_url || video.result_json)"
+              class="btn btn-action btn-action-secondary"
+              [disabled]="isDownloadingJson(video.id)"
+              (click)="downloadResultJson(video)"
+            >
+              <span *ngIf="isDownloadingJson(video.id)" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+              <i *ngIf="!isDownloadingJson(video.id)" class="bi bi-download"></i>
+              Download JSON
+            </button>
+            
+            <a *ngIf="resultJsonHref(video) as jsonHref" class="btn btn-action btn-action-link" [href]="jsonHref" target="_blank" rel="noopener noreferrer">
+              <i class="bi bi-box-arrow-up-right"></i> View JSON
+            </a>
+            
+            <button 
+              class="btn btn-action btn-action-danger"
+              (click)="deleteVideo(video.id)"
+            >
+              <i class="bi bi-trash"></i> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Empty State -->
+      <div *ngIf="filteredVideos.length === 0 && !isLoading" class="empty-state">
+        <div class="empty-icon">
+          <i class="bi bi-camera-video-off"></i>
+        </div>
+        <h3 class="empty-title">No Videos Found</h3>
+        <p class="empty-description">
+          {{ searchTerm || statusFilter !== 'ALL' ? 
+             'Try adjusting your filters or search terms.' :
+             'You haven\'t uploaded any videos yet. Start by recording your first drill!' 
+          }}
+        </p>
+        <a routerLink="/upload" class="btn btn-primary btn-lg">
+          <i class="bi bi-cloud-upload me-2"></i> Upload Your First Video
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lightbox player -->
+  <div class="video-lightbox" *ngIf="activeVideo" (click)="closePlayer()">
+    <div class="video-lightbox-content" (click)="$event.stopPropagation()">
+      <div class="lightbox-header">
+        <div>
+          <div class="eyebrow">Video #{{ activeVideo.id }}</div>
+          <div class="muted">Uploaded {{ activeVideo.uploaded_at | date:'medium' }}</div>
+        </div>
+        <button class="btn btn-sm btn-outline-light" (click)="closePlayer()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="lightbox-body">
+        <video
+          *ngIf="lightboxVideoSrc"
+          [src]="lightboxVideoSrc"
+          [poster]="posterUrl(activeVideo)"
+          preload="metadata"
+          controls
+          autoplay
+          playsinline
+          (error)="onLightboxVideoError()"
+        ></video>
+        <div *ngIf="activeVideo && !lightboxVideoSrc" class="text-center text-white py-3">No video URL available.</div>
+      </div>
+    </div>
+  </div>
+</div>

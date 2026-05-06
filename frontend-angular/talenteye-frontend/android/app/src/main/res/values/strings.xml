@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">TalentEye</string>
+    <string name="title_activity_main">TalentEye</string>
+    <string name="package_name">com.talenteye.app</string>
+    <string name="custom_url_scheme">com.talenteye.app</string>
+</resources>
