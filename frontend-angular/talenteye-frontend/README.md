@@ -229,6 +229,4 @@ Specify your license here (e.g. MIT, proprietary).
 
 ---
 
-## Contributing
 
-Add contribution guidelines (branching, tests, `ng lint` / `python manage.py test`) if this repo is collaborative.
